@@ -6,9 +6,10 @@ package com.github.leeyazhou.akshare4j.eastmoney;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
-import com.github.leeyazhou.akshare4j.eastmoney.model.KlineInfo;
-import com.github.leeyazhou.akshare4j.eastmoney.model.enums.Adjust;
-import com.github.leeyazhou.akshare4j.eastmoney.model.enums.KlinePeriod;
+import com.github.bytesgo.akshare4j.eastmoney.StockHistoryApi;
+import com.github.bytesgo.akshare4j.eastmoney.model.KlineInfo;
+import com.github.bytesgo.akshare4j.eastmoney.model.enums.Adjust;
+import com.github.bytesgo.akshare4j.eastmoney.model.enums.KlinePeriod;
 
 /**
  * 
