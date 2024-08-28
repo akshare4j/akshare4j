@@ -14,6 +14,7 @@
     <module>akshare4j</module>
     <module>akshare4j-eastmoney</module>
     <module>akshare4j-sina</module>
+    <module>akshare4j-tencent</module>
   </modules>
 
   <properties>
