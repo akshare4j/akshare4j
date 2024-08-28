@@ -6,12 +6,13 @@
     <artifactId>parent</artifactId>
     <version>4</version>
   </parent>
-  <groupId>com.github.bytesgo</groupId>
+  <groupId>com.github.leeyazhou</groupId>
   <artifactId>akshare4j-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>akshare4j</module>
+    <module>akshare4j-eastmoney</module>
   </modules>
 
   <properties>
@@ -63,6 +64,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

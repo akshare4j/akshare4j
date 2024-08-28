@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.bytesgo</groupId>
+		<groupId>com.github.leeyazhou</groupId>
 		<artifactId>akshare4j-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
@@ -11,7 +11,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.bytesgo</groupId>
+			<groupId>com.github.leeyazhou</groupId>
 			<artifactId>akshare4j</artifactId>
 			<version>${project.version}</version>
 		</dependency>
