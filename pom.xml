@@ -13,6 +13,7 @@
   <modules>
     <module>akshare4j</module>
     <module>akshare4j-eastmoney</module>
+    <module>akshare4j-sina</module>
   </modules>
 
   <properties>
