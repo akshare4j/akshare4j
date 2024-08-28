@@ -49,13 +49,11 @@ public class RequestContext {
     this.url = url;
   }
 
-  /** @param params the params to set */
   public RequestContext setParams(Map<String, Object> params) {
     this.params = params;
     return this;
   }
 
-  /** @return the params */
   public Map<String, Object> getParams() {
     return params;
   }

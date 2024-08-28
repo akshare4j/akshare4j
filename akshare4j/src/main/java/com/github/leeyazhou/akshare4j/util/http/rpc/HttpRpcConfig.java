@@ -40,17 +40,11 @@ public class HttpRpcConfig {
     return this;
   }
 
-  /**
-   * @param logRatio the logRatio to set
-   */
   public HttpRpcConfig setLogRatio(int logRatio) {
     this.logRatio = logRatio;
     return this;
   }
 
-  /**
-   * @return the logRatio
-   */
   public int getLogRatio() {
     return logRatio;
   }

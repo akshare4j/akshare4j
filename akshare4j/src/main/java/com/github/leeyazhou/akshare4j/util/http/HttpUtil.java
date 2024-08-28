@@ -149,6 +149,8 @@ public class HttpUtil implements HttpService {
    *
    * @param context 请求上下文
    * @param method 请求方法
+   * @param httpClient httpClient
+   * @param httpResponse HttpResponseBase
    * @return {@link CloseableHttpResponse}
    */
   public CloseableHttpResponse doResponse(RequestContext context, HttpMethod method, CloseableHttpClient httpClient,

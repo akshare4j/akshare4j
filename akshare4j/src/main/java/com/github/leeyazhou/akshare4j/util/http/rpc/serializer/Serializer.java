@@ -24,7 +24,8 @@ public interface Serializer {
    * @param <T> type
    * @param data data
    * @param type type
-   * @return
+   * 
+   * @return deserialized response
    */
   <T> T deserialize(byte[] data, Type type);
 }
