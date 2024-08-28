@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.github.leeyazhou</groupId>
     <artifactId>akshare4j-parent</artifactId>
-    <version>0.0.1</version>
+    <version>${revision}</version>
   </parent>
   <artifactId>akshare4j</artifactId>
   <dependencies>
