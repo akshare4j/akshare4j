@@ -26,9 +26,16 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
 /**
  * 
  */
-public class StockKlineApi {
+public class StockHistoryApi {
   private static final Map<String, String> symbolsMap = new ConcurrentHashMap<String, String>();
 
+  /**
+   * 东方财富-股票和市场代码 <br/>
+   * 
+   * <a>https://quote.eastmoney.com/center/gridlist.html#hs_a_board</a>
+   * 
+   * @return
+   */
   public static synchronized Map<String, String> querySymbolMap() {
     if (symbolsMap.isEmpty() == false) {
       return symbolsMap;
@@ -81,6 +88,18 @@ public class StockKlineApi {
     return result;
   }
 
+  /**
+   * 东方财富网-行情首页-沪深京 A 股-每日行情 <br/>
+   * 
+   * https://quote.eastmoney.com/concept/sh603777.html?from=classic
+   * 
+   * @param symbol
+   * @param startDate format: yyyy-MM-dd
+   * @param endDate format: yyyy-MM-dd
+   * @param klinePeriod {@link KlinePeriod}
+   * @param adjust {@link Adjust}
+   * @return
+   */
   public static List<KlineInfo> getKlines(String symbol, String startDate, String endDate, KlinePeriod klinePeriod,
       Adjust adjust) {
     String url = "https://push2his.eastmoney.com/api/qt/stock/kline/get";
@@ -122,11 +141,4 @@ public class StockKlineApi {
     }).collect(Collectors.toList());
   }
 
-  public static void main(String[] args) {
-    String symbol = "601360";
-    String start_date = "20240301";
-    String end_date = "20240528";
-    List<KlineInfo> klines = getKlines(symbol, start_date, end_date, KlinePeriod.daily, Adjust.QFQ);
-    System.out.println(JSON.toJSONString(klines));
-  }
 }
