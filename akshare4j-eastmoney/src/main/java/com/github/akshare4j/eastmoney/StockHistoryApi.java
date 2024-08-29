@@ -37,11 +37,11 @@ public class StockHistoryApi {
   private static final Map<String, String> symbolsMap = new ConcurrentHashMap<String, String>();
 
   /**
-   * 东方财富-股票和市场代码 <br/>
+   * 东方财富-股票和市场代码
    * 
    * <a>https://quote.eastmoney.com/center/gridlist.html#hs_a_board</a>
    * 
-   * @return
+   * @return symbol map
    */
   public static synchronized Map<String, String> querySymbolMap() {
     if (symbolsMap.isEmpty() == false) {
@@ -96,16 +96,16 @@ public class StockHistoryApi {
   }
 
   /**
-   * 东方财富网-行情首页-沪深京 A 股-每日行情 <br/>
+   * 东方财富网-行情首页-沪深京 A 股-每日行情
    * 
    * https://quote.eastmoney.com/concept/sh603777.html?from=classic
    * 
-   * @param symbol
+   * @param symbol symbol
    * @param startDate format: yyyy-MM-dd
    * @param endDate format: yyyy-MM-dd
    * @param klinePeriod {@link KlinePeriod}
    * @param adjust {@link Adjust}
-   * @return
+   * @return KlineInfo
    */
   public static List<KlineInfo> getKlines(String symbol, String startDate, String endDate, KlinePeriod klinePeriod,
       Adjust adjust) {
@@ -154,11 +154,11 @@ public class StockHistoryApi {
    * https://quote.eastmoney.com/us/ENTX.html#fullScreenChart
    * 
    * @param symbol 股票代码; 此股票代码需要通过调用 ak.stock_us_spot_em() 的 `代码` 字段获取
-   * @param startDate
-   * @param endDate
-   * @param klinePeriod
-   * @param adjust
-   * @return
+   * @param endDate endDate
+   * @param limit limit
+   * @param klinePeriod {@link KlinePeriod}
+   * @param adjust {@link Adjust}
+   * @return KlineInfo
    */
   public static List<KlineInfo> stock_us_hist(String symbol, String endDate, int limit, KlinePeriod klinePeriod,
       Adjust adjust) {
@@ -202,9 +202,11 @@ public class StockHistoryApi {
   }
 
   /**
-   * 东方财富-个股-股票信息 <br/>
+   * 东方财富-个股-股票信息
    * 
    * https://quote.eastmoney.com/concept/sh603777.html?from=classic
+   * 
+   * @param symbol symbol
    */
   public static StockIndivalInfo stock_individual_info_em(String symbol) {
     // "f57": "股票代码",
