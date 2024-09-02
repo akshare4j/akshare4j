@@ -8,7 +8,7 @@
 		<artifactId>parent</artifactId>
 		<version>4</version>
 	</parent>
-	<groupId>com.github.leeyazhou.akshare4j</groupId>
+	<groupId>com.github.leeyazhou</groupId>
 	<artifactId>akshare4j-parent</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
