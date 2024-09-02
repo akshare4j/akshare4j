@@ -125,14 +125,13 @@ public class StockHistoryApi {
     HttpResponse httpResponse = HttpUtil.getInstance().get(context);
     EastMoneyResult<KlineResult> result =
         JSON.parseObject(httpResponse.getResponse(), new TypeReference<EastMoneyResult<KlineResult>>() {}.getType());
-    System.out.println(httpResponse.getResponse());
+    // System.out.println(httpResponse.getResponse());
     if (result.getData() == null || result.getData().getKlines() == null) {
       return null;
     }
     return result.getData().getKlines().stream().map(klineStr -> {
       String[] data = klineStr.split(",");
       KlineInfo klineInfo = new KlineInfo();
-      klineInfo.setTsCode(symbol);
       klineInfo.setTradeDate(DateUtils.parseDate(data[0], "yyyy-MM-dd"));
       klineInfo.setOpen(new BigDecimal(data[1]));
       klineInfo.setClose(new BigDecimal(data[2]));
@@ -140,10 +139,10 @@ public class StockHistoryApi {
       klineInfo.setLow(new BigDecimal(data[4]));
       klineInfo.setVol(new BigDecimal(data[5]));
       klineInfo.setAmount(new BigDecimal(data[6]));
-      //
+      klineInfo.setAmplitude(new BigDecimal(data[7]));
       klineInfo.setPctChg(new Double(data[8]));
       klineInfo.setChange(new Double(data[9]));
-
+      klineInfo.setTurnoverRate(new BigDecimal(data[10]));
       return klineInfo;
     }).collect(Collectors.toList());
   }
@@ -185,7 +184,6 @@ public class StockHistoryApi {
     return result.getData().getKlines().stream().map(klineStr -> {
       String[] data = klineStr.split(",");
       KlineInfo klineInfo = new KlineInfo();
-      klineInfo.setTsCode(symbol);
       klineInfo.setTradeDate(DateUtils.parseDate(data[0], "yyyy-MM-dd"));
       klineInfo.setOpen(new BigDecimal(data[1]));
       klineInfo.setClose(new BigDecimal(data[2]));
@@ -193,10 +191,10 @@ public class StockHistoryApi {
       klineInfo.setLow(new BigDecimal(data[4]));
       klineInfo.setVol(new BigDecimal(data[5]));
       klineInfo.setAmount(new BigDecimal(data[6]));
-      //
+      klineInfo.setAmplitude(new BigDecimal(data[7]));
       klineInfo.setPctChg(new Double(data[8]));
       klineInfo.setChange(new Double(data[9]));
-
+      klineInfo.setTurnoverRate(new BigDecimal(data[10]));
       return klineInfo;
     }).collect(Collectors.toList());
   }

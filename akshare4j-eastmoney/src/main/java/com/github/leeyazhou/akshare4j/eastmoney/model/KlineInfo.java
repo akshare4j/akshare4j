@@ -10,26 +10,62 @@ import java.util.Date;
  * 
  */
 public class KlineInfo {
-  private String tsCode; // 股票代码
-  private Date tradeDate; // 交易日期
-  private BigDecimal open; // 开盘价
-  private BigDecimal high; // 最高价
-  private BigDecimal low; // 最低价
-  private BigDecimal close; // 收盘价
-  private BigDecimal preClose; // 昨收价
-  private Double change; // 涨跌额
-  private Double pctChg; // 涨跌幅 （未复权，如果是复权请用 <a
-  // href="https://tushare.pro/document/2?doc_id=109">通用行情接口</a> ）
-  private BigDecimal vol; // 成交量 （手）
-  private BigDecimal amount; // 成交额 （千元）
 
-  public String getTsCode() {
-    return tsCode;
-  }
+  /**
+   * 交易日期
+   */
+  private Date tradeDate;
 
-  public void setTsCode(String tsCode) {
-    this.tsCode = tsCode;
-  }
+  /**
+   * 开盘价
+   */
+  private BigDecimal open;
+  /**
+   * 最高价
+   */
+  private BigDecimal high;
+
+  /**
+   * 最低价
+   */
+  private BigDecimal low;
+
+  /**
+   * 收盘价
+   */
+  private BigDecimal close;
+
+  /**
+   * 昨收价
+   */
+  private BigDecimal preClose;
+
+  /**
+   * 涨跌额
+   */
+  private Double change;
+  /**
+   * 涨跌幅 （未复权，如果是复权请用 <a href="https://tushare.pro/document/2?doc_id=109">通用行情接口</a> ）
+   */
+  private Double pctChg;
+
+  /**
+   * 成交量 （手）
+   */
+  private BigDecimal vol;
+
+  /**
+   * 成交额 （千元）
+   */
+  private BigDecimal amount; //
+
+  /**
+   * 振幅 float64 注意单位: %
+   */
+  private BigDecimal amplitude;
+
+  /** 换手率 float64 注意单位: % */
+  private BigDecimal turnoverRate;
 
   public Date getTradeDate() {
     return tradeDate;
@@ -111,5 +147,31 @@ public class KlineInfo {
     this.amount = amount;
   }
 
+  /**
+   * @param amplitude the amplitude to set
+   */
+  public void setAmplitude(BigDecimal amplitude) {
+    this.amplitude = amplitude;
+  }
 
+  /**
+   * @return the amplitude
+   */
+  public BigDecimal getAmplitude() {
+    return amplitude;
+  }
+
+  /**
+   * @param turnoverRate the turnoverRate to set
+   */
+  public void setTurnoverRate(BigDecimal turnoverRate) {
+    this.turnoverRate = turnoverRate;
+  }
+
+  /**
+   * @return the turnoverRate
+   */
+  public BigDecimal getTurnoverRate() {
+    return turnoverRate;
+  }
 }
