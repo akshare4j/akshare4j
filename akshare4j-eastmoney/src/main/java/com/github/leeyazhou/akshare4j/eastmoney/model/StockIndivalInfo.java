@@ -24,6 +24,7 @@ public class StockIndivalInfo {
   private BigDecimal totalMarketValue;
   private BigDecimal tradeMarketValue;
   private String listDate;
+  private String industry;
 
   public String getSymbol() {
     return symbol;
@@ -81,5 +82,18 @@ public class StockIndivalInfo {
     this.listDate = listDate;
   }
 
+  /**
+   * @param industry the industry to set
+   */
+  public void setIndustry(String industry) {
+    this.industry = industry;
+  }
+
+  /**
+   * @return the industry
+   */
+  public String getIndustry() {
+    return industry;
+  }
 
 }

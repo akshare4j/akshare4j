@@ -130,6 +130,7 @@ public class StockApi {
     stockIndivalInfo.setTradeMarketVol(new BigDecimal(result.get("f85")));
     stockIndivalInfo.setTotalMarketValue(new BigDecimal(result.get("f116")));
     stockIndivalInfo.setTradeMarketValue(new BigDecimal(result.get("f117")));
+    stockIndivalInfo.setIndustry(result.get("f127"));
     return stockIndivalInfo;
   }
 
