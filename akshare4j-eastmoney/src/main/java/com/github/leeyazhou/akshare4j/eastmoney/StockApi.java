@@ -231,6 +231,96 @@ public class StockApi {
       return null;
     }
   }
+  /**
+   * 东方财富网-港股-实时行情
+   * 
+   * https://quote.eastmoney.com/center/gridlist.html#hk_stocks
+   */
+  public static List<StockInfo> stock_hk_spot_em() {
+    String url = "https://72.push2.eastmoney.com/api/qt/clist/get";
+    RequestContext context = RequestContext.newContext(url);
+    JSONObject params = new JSONObject();
+    params.put("pn", "1");
+    params.put("pz", "50000");
+    params.put("po", "1");
+    params.put("np", "1");
+    params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
+    params.put("fltt", "2");
+    params.put("invt", "2");
+    params.put("fid", "f3");
+    params.put("fs", "m:128 t:3,m:128 t:4,m:128 t:1,m:128 t:2");
+    params.put("fields", "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152");
+    params.put("_", "1624010056945");
+    params.put("_", currentTime());
+    context.setParams(params);
+    try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
+      HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
+      EastMoneyResult<StockListDiff> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+          new TypeReference<EastMoneyResult<StockListDiff>>() {}.getType());
+      if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
+        return Collections.emptyList();
+      }
+      
+      // "_",
+      // "最新价",f2
+      // "涨跌幅",f3
+      // "涨跌额",f4
+      // "成交量",f5
+      // "成交额",f6
+      // "振幅",f7
+      // "换手率",f8
+      // "市盈率-动态",f9
+      // "量比",f10
+      // "5分钟涨跌",f11
+      // "代码",f12
+      // "_",f13
+      // "名称",f14
+      // "最高",f15
+      // "最低",f16
+      // "今开",f17
+      // "昨收",f18
+      // "总市值",f20
+      // "流通市值",f21
+      // "涨速",f22
+      // "市净率",f23
+      // "60日涨跌幅",f24
+      // "年初至今涨跌幅",f25
+      // "-",f62
+      // "-",f115
+      // "-",f128
+      // "-",f140
+      // "-",f141
+      // "-",f136
+      // "-",f152
+      return eastMoneyResult.getData().getDiff().stream().map(dif -> {
+        try {
+          StockInfo stockInfo = new StockInfo();
+          stockInfo.setLatestPrice(new BigDecimal(defaultString(dif.get("f2"))));
+          stockInfo.setPriceChange(new BigDecimal(defaultString(dif.get("f3"))));
+          stockInfo.setPriceChangeAmount(new BigDecimal(defaultString(dif.get("f4"))));
+          stockInfo.setVolume(new BigDecimal(defaultString(dif.get("f5"))));
+          stockInfo.setVolumeAmount(new BigDecimal(defaultString(dif.get("f6"))));
+          stockInfo.setAmplitude(new BigDecimal(defaultString(dif.get("f7"))));
+          stockInfo.setTurnoverRatio(new BigDecimal(defaultString(dif.get("f8"))));
+          stockInfo.setSymbol(dif.get("f12"));
+          stockInfo.setName(dif.get("f14"));
+          stockInfo.setOpen(new BigDecimal(defaultString(dif.get("f17"))));
+          stockInfo.setCloseYestoday(new BigDecimal(defaultString(dif.get("f18"))));
+          stockInfo.setHigh(new BigDecimal(defaultString(dif.get("f15"))));
+          stockInfo.setLow(new BigDecimal(defaultString(dif.get("f16"))));
+          stockInfo.setTotalMarketValue(new BigDecimal(defaultString(dif.get("f20"))));
+          stockInfo.setTradeMarketValue(new BigDecimal(defaultString(dif.get("f21"))));
+          return stockInfo;
+        } catch (Exception e) {
+          logger.error(JSON.toJSONString(dif), e);
+          throw e;
+        }
+      }).collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("", e);
+      return null;
+    }
+  }
 
   /**
    * 东方财富网-美股-实时行情

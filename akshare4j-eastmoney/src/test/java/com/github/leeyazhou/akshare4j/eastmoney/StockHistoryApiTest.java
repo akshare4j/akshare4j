@@ -7,8 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
 import com.github.leeyazhou.akshare4j.eastmoney.model.KlineInfo;
-import com.github.leeyazhou.akshare4j.eastmoney.model.StockIndivalInfo;
-import com.github.leeyazhou.akshare4j.eastmoney.model.StockInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.Adjust;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.KlinePeriod;
 
@@ -39,23 +37,4 @@ class StockHistoryApiTest {
 
   }
 
-  @Test
-  public void teststock_individual_info_em() {
-    StockIndivalInfo stock_individual_info_em = StockApi.stock_individual_info_em(symbol);
-    System.out.println(JSON.toJSONString(stock_individual_info_em));
-  }
-
-  @Test
-  public void teststock_zh_a_spot_em() {
-    List<StockInfo> stocks = StockHistoryApi.stock_zh_a_spot_em();
-    System.out.println(JSON.toJSONString(stocks));
-    System.out.println(stocks.size());
-  }
-
-  @Test
-  public void teststock_us_spot_em() {
-    List<StockInfo> stocks = StockHistoryApi.stock_us_spot_em();
-    System.out.println(JSON.toJSONString(stocks));
-    System.out.println(stocks.size());
-  }
 }
