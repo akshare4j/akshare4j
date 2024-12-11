@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  *
  * @author leeyazhou
  */
-public class StockInfo  {
+public class StockInfo {
 
   /**
    * 
@@ -23,6 +23,11 @@ public class StockInfo  {
 
   /** 代码 */
   private String symbol;
+
+  /**
+   * 市场
+   */
+  private String market;
 
   /** 名称 */
   private String name;
@@ -258,5 +263,18 @@ public class StockInfo  {
     this.marketType = marketType;
   }
 
+  /**
+   * @param market the market to set
+   */
+  public void setMarket(String market) {
+    this.market = market;
+  }
+
+  /**
+   * @return the market
+   */
+  public String getMarket() {
+    return market;
+  }
 
 }

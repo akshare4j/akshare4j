@@ -43,11 +43,11 @@ class StockApiTest {
   @Test
   public void testStock_hk_spot_em() {
     List<StockInfo> stocks = StockApi.stock_hk_spot_em();
-    System.out.println(JSON.toJSONString(stocks));
+//    System.out.println(JSON.toJSONString(stocks));
     System.out.println(stocks.size());
     stocks = stocks.stream().filter(s -> s.getOpen() != null && s.getOpen().compareTo(BigDecimal.ZERO) > 0)
         .collect(Collectors.toList());
-    System.out.println(JSON.toJSONString(stocks));
+//    System.out.println(JSON.toJSONString(stocks));
     System.out.println(stocks.size());
   }
 }

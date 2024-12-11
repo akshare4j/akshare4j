@@ -16,11 +16,10 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
-import com.github.leeyazhou.akshare4j.eastmoney.model.CListInfo;
+import com.github.leeyazhou.akshare4j.eastmoney.model.DataWrapper;
 import com.github.leeyazhou.akshare4j.eastmoney.model.EastMoneyResult;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockIndivalInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockInfo;
-import com.github.leeyazhou.akshare4j.eastmoney.model.StockListDiff;
 import com.github.leeyazhou.akshare4j.util.http.HttpClientUtil;
 import com.github.leeyazhou.akshare4j.util.http.HttpResponse;
 import com.github.leeyazhou.akshare4j.util.http.HttpUtil;
@@ -62,10 +61,10 @@ public class StockApi {
     HttpResponse httpResponse = HttpUtil.getInstance().get(context);
     logger.info("querySymbolMap: {}", httpResponse.getResponse());
     Map<String, String> result = new HashMap<String, String>();
-    EastMoneyResult<CListInfo> clist =
-        JSON.parseObject(httpResponse.getResponse(), new TypeReference<EastMoneyResult<CListInfo>>() {}.getType());
+    EastMoneyResult<DataWrapper<Map<String, String>>> clist = JSON.parseObject(httpResponse.getResponse(),
+        new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
     if (clist != null && clist.getData() != null) {
-      clist.getData().getDiff().stream().map(d -> d.getF12()).forEach(s -> result.put(s, "1"));;
+      clist.getData().getDiff().stream().map(d -> d.get("f12")).forEach(s -> result.put(s, "1"));;
     }
 
     params = new JSONObject();
@@ -83,9 +82,10 @@ public class StockApi {
     context = RequestContext.newContext(url);
     context.setParams(params);
     httpResponse = HttpUtil.getInstance().get(context);
-    clist = JSON.parseObject(httpResponse.getResponse(), new TypeReference<EastMoneyResult<CListInfo>>() {}.getType());
+    clist = JSON.parseObject(httpResponse.getResponse(),
+        new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
     if (clist != null && clist.getData() != null) {
-      clist.getData().getDiff().stream().map(d -> d.getF12()).forEach(s -> result.put(s, "0"));;
+      clist.getData().getDiff().stream().map(d -> d.get("f12")).forEach(s -> result.put(s, "0"));;
     }
     logger.info("querySymbolMap: {}", httpResponse.getResponse());
     symbolsMap.putAll(result);
@@ -160,13 +160,13 @@ public class StockApi {
     params.put("fid", "f3");
     params.put("fs", "m:0 t:6,m:0 t:80,m:1 t:2,m:1 t:23,m:0 t:81 s:2048");
     params.put("fields",
-        "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152");
+                      "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152");
     params.put("_", currentTime());
     context.setParams(params);
     try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
       HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
-      EastMoneyResult<StockListDiff> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
-          new TypeReference<EastMoneyResult<StockListDiff>>() {}.getType());
+      EastMoneyResult<DataWrapper<Map<String, String>>> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+          new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
       if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
         return Collections.emptyList();
       }
@@ -231,6 +231,7 @@ public class StockApi {
       return null;
     }
   }
+
   /**
    * 东方财富网-港股-实时行情
    * 
@@ -249,18 +250,20 @@ public class StockApi {
     params.put("invt", "2");
     params.put("fid", "f3");
     params.put("fs", "m:128 t:3,m:128 t:4,m:128 t:1,m:128 t:2");
-    params.put("fields", "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152");
+    params.put("fields",
+        "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152");
     params.put("_", "1624010056945");
     params.put("_", currentTime());
     context.setParams(params);
     try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
       HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
-      EastMoneyResult<StockListDiff> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
-          new TypeReference<EastMoneyResult<StockListDiff>>() {}.getType());
+      logger.info("stock_hk_spot_em: {}", httpResponse.getResponse());
+      EastMoneyResult<DataWrapper<Map<String, String>>> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+          new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
       if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
         return Collections.emptyList();
       }
-      
+
       // "_",
       // "最新价",f2
       // "涨跌幅",f3
@@ -348,8 +351,8 @@ public class StockApi {
     context.setParams(params);
     try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
       HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
-      EastMoneyResult<StockListDiff> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
-          new TypeReference<EastMoneyResult<StockListDiff>>() {}.getType());
+      EastMoneyResult<DataWrapper<Map<String, String>>> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+          new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
       if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
         return Collections.emptyList();
       }
