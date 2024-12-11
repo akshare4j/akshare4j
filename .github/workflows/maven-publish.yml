@@ -4,29 +4,25 @@ on:
     tags: 
       - "v*.*.*"
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Apache Maven Central
-        uses: actions/setup-java@v4
-        with: # running setup-java again overwrites the settings.xml
-          java-version: '11'
-          distribution: 'temurin'
-          cache: maven
-          server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: ${{ secrets.OSSRH_USERNAME }} # env variable for username in deploy
-          server-password: ${{ secrets.OSSRH_TOKEN }} # env variable for token in deploy
-          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE_KEY }} # env variable for GPG private key passphrase
-      - name: Release Maven package
-        uses: samuelmeuli/action-maven-publish@v1
-        with:
-          maven_profiles: 'release-github'
-          maven_goals_phases: 'clean deploy'
-          maven_args: '-DskipTests'
-          gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          gpg_passphrase: ${{ secrets.GPG_PASSPHRASE_KEY }}
-          nexus_username: ${{ secrets.OSSRH_USERNAME }}
-          nexus_password: ${{ secrets.OSSRH_TOKEN }}
+  maven-publish:
+   runs-on: ubuntu-18.04
+   steps:
+    - name: Check out Git repository
+      uses: actions/checkout@v2
+
+    - name: Install Java and Maven
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Release Maven package
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        maven_profiles: 'release-github'
+        maven_goals_phases: 'clean deploy'
+        maven_args: '-DskipTests'
+        gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE_KEY }}
+        nexus_username: ${{ secrets.OSSRH_USERNAME }}
+        nexus_password: ${{ secrets.OSSRH_TOKEN }}
+
