@@ -36,8 +36,8 @@ jobs:
       with:
         maven_profiles: 'release-ossrh'
         maven_args: '-DskipTests'
-        gpg_private_key: ${{ secrets.gpg_private_key }}
-        gpg_passphrase: ${{ secrets.gpg_passphrase }}
+        gpg_private_key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE_KEY }}
         nexus_username: ${{ secrets.OSSRH_USERNAME }}
         nexus_password: ${{ secrets.OSSRH_TOKEN }}
 
