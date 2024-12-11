@@ -1,8 +1,8 @@
 name: Publish package to the Maven Central Repository and GitHub Packages
 on:
   push:
-   branches:
-    - main
+   tags:
+    - "v*.*.*"
 jobs:
   publish:
    runs-on: ubuntu-latest
