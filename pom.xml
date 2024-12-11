@@ -201,6 +201,7 @@
 						<version>${central.publishing.maven.plugin}</version>
 						<extensions>true</extensions>
 						<configuration>
+							<serverId>ossrh</serverId>
 							<autoPublish>true</autoPublish>
 							<waitUntil>published</waitUntil>
 						</configuration>
