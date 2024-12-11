@@ -198,10 +198,6 @@
 									<goal>sign</goal>
 								</goals>
 								<phase>verify</phase>
-								<configuration>
-									<executable>${gpg.executable}</executable>
-									<passphrase>${gpg.passphrase}</passphrase>
-								</configuration>
 							</execution>
 						</executions>
 						<configuration>
