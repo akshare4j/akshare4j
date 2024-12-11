@@ -16,10 +16,10 @@ jobs:
           distribution: "temurin"
           cache: maven
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
-          gpg-private-key: MAVEN_GPG_PRIVATE_KEY
-          gpg-passphrase: GPG_PASSPHRASE_KEY
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish to Apache Maven Central
         run: mvn deploy -Prelease-github -DskipTests
         env:
