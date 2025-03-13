@@ -18,6 +18,7 @@ import com.github.leeyazhou.akshare4j.eastmoney.model.KlineInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.KlineResult;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.Adjust;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.KlinePeriod;
+import com.github.leeyazhou.akshare4j.eastmoney.model.enums.MarketType;
 import com.github.leeyazhou.akshare4j.util.http.HttpClientUtil;
 import com.github.leeyazhou.akshare4j.util.http.HttpResponse;
 import com.github.leeyazhou.akshare4j.util.http.HttpUtil;
@@ -41,8 +42,8 @@ public class StockHistoryApi {
    * @param adjust {@link Adjust}
    * @return KlineInfo
    */
-  public static List<KlineInfo> getKlines(String symbol, String startDate, String endDate, KlinePeriod klinePeriod,
-      Adjust adjust) {
+  public static List<KlineInfo> getKlines(String symbol, MarketType marketType, String startDate, String endDate,
+      KlinePeriod klinePeriod, Adjust adjust) {
     String url = "https://push2his.eastmoney.com/api/qt/stock/kline/get";
     RequestContext context = RequestContext.newContext(url);
     JSONObject params = new JSONObject();
@@ -51,7 +52,8 @@ public class StockHistoryApi {
     params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
     params.put("klt", klinePeriod.getCode());
     params.put("fqt", adjust.getCode());
-    params.put("secid", String.format("%s.%s", StockApi.querySymbolMap().get(symbol), symbol));
+    // params.put("secid", String.format("%s.%s", StockApi.querySymbolMap().get(symbol), symbol));
+    params.put("secid", String.format("%s.%s", marketType.getCode(), symbol));
     params.put("beg", startDate);
     params.put("end", endDate);
     params.put("_", currentTime());

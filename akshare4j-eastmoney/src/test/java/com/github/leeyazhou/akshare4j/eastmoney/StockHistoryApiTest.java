@@ -9,6 +9,7 @@ import com.alibaba.fastjson2.JSON;
 import com.github.leeyazhou.akshare4j.eastmoney.model.KlineInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.Adjust;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.KlinePeriod;
+import com.github.leeyazhou.akshare4j.eastmoney.model.enums.MarketType;
 
 /**
  * 
@@ -23,7 +24,8 @@ class StockHistoryApiTest {
   void testGetKlines() {
     String start_date = "20240301";
     String end_date = "20240528";
-    List<KlineInfo> klines = StockHistoryApi.getKlines(symbol, start_date, end_date, KlinePeriod.daily, Adjust.QFQ);
+    List<KlineInfo> klines =
+        StockHistoryApi.getKlines(symbol, MarketType.HK, start_date, end_date, KlinePeriod.daily, Adjust.QFQ);
     System.out.println(JSON.toJSONString(klines));
 
   }
