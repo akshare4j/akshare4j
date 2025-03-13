@@ -1,6 +1,7 @@
 package com.github.leeyazhou.akshare4j.eastmoney.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * 股票管理对象 tb_stock
@@ -276,5 +277,23 @@ public class StockInfo {
   public String getMarket() {
     return market;
   }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(symbol);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    StockInfo other = (StockInfo) obj;
+    return Objects.equals(symbol, other.symbol);
+  }
+
 
 }

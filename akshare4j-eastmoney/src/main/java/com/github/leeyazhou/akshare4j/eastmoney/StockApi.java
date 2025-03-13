@@ -271,7 +271,7 @@ public class StockApi {
           break;
         }
       }
-      return stockInfos;
+      return stockInfos.stream().distinct().collect(Collectors.toList());
     } catch (Exception e) {
       logger.error("", e);
       return null;
@@ -382,7 +382,7 @@ public class StockApi {
           break;
         }
       }
-      return stockInfos;
+      return stockInfos.stream().distinct().collect(Collectors.toList());
     } catch (Exception e) {
       logger.error("", e);
       return null;
@@ -495,7 +495,7 @@ public class StockApi {
           break;
         }
       }
-      return stockInfos;
+      return stockInfos.stream().distinct().collect(Collectors.toList());
     } catch (Exception e) {
       logger.error("", e);
       return null;
