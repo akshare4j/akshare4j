@@ -19,6 +19,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.TypeReference;
 import com.github.leeyazhou.akshare4j.eastmoney.model.DataWrapper;
 import com.github.leeyazhou.akshare4j.eastmoney.model.EastMoneyResult;
+import com.github.leeyazhou.akshare4j.eastmoney.model.StockBoardIndustryInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockIndivalInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.MarketType;
@@ -492,6 +493,256 @@ public class StockApi {
         }
         stockInfos.addAll(stockInfosTemp);
         if (stockInfosTemp.size() < pageSize) {
+          break;
+        }
+      }
+      return stockInfos.stream().distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("", e);
+      return null;
+    }
+  }
+
+  /**
+   * 东方财富-行业板块<br>
+   * 接口: stock_board_industry_name_em
+   * 
+   * 目标地址: https://quote.eastmoney.com/center/boardlist.html#industry_board
+   * 
+   * 描述: 东方财富-沪深京板块-行业板块
+   * 
+   * 限量: 单次返回当前时刻所有行业板的实时行情数据
+   * 
+   * @return
+   */
+  public static List<StockBoardIndustryInfo> stock_board_industry_name_em() {
+    String url = "https://17.push2.eastmoney.com/api/qt/clist/get";
+    RequestContext context = RequestContext.newContext(url);
+    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    JSONObject params = new JSONObject();
+    int pageSize = 20;
+    int currentPage = 1;
+    params.put("pz", pageSize);
+    params.put("po", "1");
+    params.put("np", "1");
+    params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
+    params.put("fltt", "2");
+    params.put("invt", "2");
+    params.put("fid", "f3");
+    params.put("fs", "m:90 t:2 f:!50");
+    params.put("fields",
+        "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222");
+    params.put("_", currentTime());
+
+
+    context.setParams(params);
+    try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
+      List<StockBoardIndustryInfo> stockInfos = new ArrayList<>();
+      for (;;) {
+        params.put("pn", currentPage++);
+        HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
+        logger.info("stock_board_industry_name_em, currentPage: {}, response: {}", currentPage,
+            httpResponse.getResponse());
+        EastMoneyResult<DataWrapper<Map<String, String>>> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+            new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
+        if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
+          break;
+        }
+        // "排名",
+        // "-",
+        // "最新价",
+        // "涨跌幅",
+        // "涨跌额",
+        // "-",
+        // "_",
+        // "-",
+        // "换手率",
+        // "-",
+        // "-",
+        // "-",
+        // "板块代码",
+        // "-",
+        // "板块名称",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "总市值",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "上涨家数",
+        // "下跌家数",
+        // "-",
+        // "-",
+        // "-",
+        // "领涨股票",
+        // "-",
+        // "-",
+        // "领涨股票-涨跌幅",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        // "-",
+        List<StockBoardIndustryInfo> stockInfosTemp = eastMoneyResult.getData().getDiff().stream().map(dif -> {
+          try {
+            StockBoardIndustryInfo stockInfo = new StockBoardIndustryInfo();
+            stockInfo.setBoardName(dif.get("f14"));
+            stockInfo.setBoardSymbol(dif.get("f12"));
+            stockInfo.setRiseNum(Integer.parseInt(dif.get("f104")));
+            stockInfo.setFallNum(Integer.parseInt(dif.get("f105")));
+            stockInfo.setRiseMaxStockSymbol(dif.get("f104"));
+            stockInfo.setRiseMaxStockPriceChange(new BigDecimal(defaultString(dif.get("f136"))));
+            stockInfo.setFallNum(Integer.parseInt(dif.get("f105")));
+            stockInfo.setLatestPrice(new BigDecimal(defaultString(dif.get("f2"))));
+            stockInfo.setPriceChange(new BigDecimal(defaultString(dif.get("f3"))));
+            stockInfo.setPriceChangeAmount(new BigDecimal(defaultString(dif.get("f4"))));
+            stockInfo.setTurnoverRatio(new BigDecimal(defaultString(dif.get("f8"))));
+            // MarketType marketType = MarketType.of(dif.get("f13"));
+            // if (marketType != null) {
+            // stockInfo.setMarketType(marketType.name());
+            // }
+            // stockInfo.setName(dif.get("f14"));
+            // stockInfo.setOpen(new BigDecimal(defaultString(dif.get("f17"))));
+            // stockInfo.setCloseYestoday(new BigDecimal(defaultString(dif.get("f18"))));
+            // stockInfo.setHigh(new BigDecimal(defaultString(dif.get("f15"))));
+            // stockInfo.setLow(new BigDecimal(defaultString(dif.get("f16"))));
+            stockInfo.setTotalMarketValue(new BigDecimal(defaultString(dif.get("f20"))));
+            // stockInfo.setTradeMarketValue(new BigDecimal(defaultString(dif.get("f21"))));
+            return stockInfo;
+          } catch (Exception e) {
+            logger.error(JSON.toJSONString(dif), e);
+            throw e;
+          }
+        }).collect(Collectors.toList());
+        if (stockInfosTemp == null) {
+          break;
+        }
+        stockInfos.addAll(stockInfosTemp);
+        if (stockInfosTemp.size() < pageSize) {
+          break;
+        }
+      }
+      return stockInfos.stream().distinct().collect(Collectors.toList());
+    } catch (Exception e) {
+      logger.error("", e);
+      return null;
+    }
+  }
+
+  /**
+   * 接口: stock_board_industry_cons_em
+   * 
+   * 目标地址: https://data.eastmoney.com/bkzj/BK1027.html
+   * 
+   * 描述: 东方财富-沪深板块-行业板块-板块成份
+   * 
+   * 限量: 单次返回指定 symbol 的所有成份股
+   * 
+   * @return
+   */
+  public static List<StockInfo> stock_board_industry_cons_em(String symbol) {
+    final String url = "https://29.push2.eastmoney.com/api/qt/clist/get";
+    RequestContext context = RequestContext.newContext(url);
+    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    JSONObject params = new JSONObject();
+    int pageSize = 100;
+    int currentPage = 1;
+    params.put("pz", pageSize);
+    params.put("pn", "1");
+    params.put("po", "1");
+    params.put("np", "1");
+    params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
+    params.put("fltt", "2");
+    params.put("invt", "2");
+    params.put("fid", "f3");
+    params.put("fs", String.format("b:%s f:!50", symbol));
+    params.put("fields",
+        "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f22,f11,f62,f128,f136,f115,f152,f45");
+    params.put("_", currentTime());
+    context.setParams(params);
+    try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
+      List<StockInfo> stockInfos = new ArrayList<StockInfo>();
+      for (;;) {
+        params.put("pn", currentPage++);
+        HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
+        logger.info("stock_zh_a_spot_em, currentPage: {}, response: {}", currentPage, httpResponse.getResponse());
+        EastMoneyResult<DataWrapper<Map<String, String>>> eastMoneyResult = JSON.parseObject(httpResponse.getResponse(),
+            new TypeReference<EastMoneyResult<DataWrapper<Map<String, String>>>>() {}.getType());
+        if (eastMoneyResult == null || eastMoneyResult.getData() == null) {
+          break;
+        }
+
+        // "_",
+        // "最新价",f2
+        // "涨跌幅",f3
+        // "涨跌额",f4
+        // "成交量",f5
+        // "成交额",f6
+        // "振幅",f7
+        // "换手率",f8
+        // "市盈率-动态",f9
+        // "量比",f10
+        // "5分钟涨跌",f11
+        // "代码",f12
+        // "_",f13
+        // "名称",f14
+        // "最高",f15
+        // "最低",f16
+        // "今开",f17
+        // "昨收",f18
+        // "总市值",f20
+        // "流通市值",f21
+        // "涨速",f22
+        // "市净率",f23
+        // "60日涨跌幅",f24
+        // "年初至今涨跌幅",f25
+        // "-",f62
+        // "-",f115
+        // "-",f128
+        // "-",f140
+        // "-",f141
+        // "-",f136
+        // "-",f152
+        List<StockInfo> tempStocks = eastMoneyResult.getData().getDiff().stream().map(dif -> {
+          try {
+            StockInfo stockInfo = new StockInfo();
+            stockInfo.setLatestPrice(new BigDecimal(defaultString(dif.get("f2"))));
+            stockInfo.setPriceChange(new BigDecimal(defaultString(dif.get("f3"))));
+            stockInfo.setPriceChangeAmount(new BigDecimal(defaultString(dif.get("f4"))));
+            stockInfo.setVolume(new BigDecimal(defaultString(dif.get("f5"))));
+            stockInfo.setVolumeAmount(new BigDecimal(defaultString(dif.get("f6"))));
+            stockInfo.setAmplitude(new BigDecimal(defaultString(dif.get("f7"))));
+            stockInfo.setTurnoverRatio(new BigDecimal(defaultString(dif.get("f8"))));
+            stockInfo.setSymbol(dif.get("f12"));
+            MarketType marketType = MarketType.of(dif.get("f13"));
+            if (marketType != null) {
+              stockInfo.setMarketType(marketType.name());
+            }
+            stockInfo.setName(dif.get("f14"));
+            stockInfo.setOpen(new BigDecimal(defaultString(dif.get("f17"))));
+            stockInfo.setCloseYestoday(new BigDecimal(defaultString(dif.get("f18"))));
+            stockInfo.setHigh(new BigDecimal(defaultString(dif.get("f15"))));
+            stockInfo.setLow(new BigDecimal(defaultString(dif.get("f16"))));
+            stockInfo.setTotalMarketValue(new BigDecimal(defaultString(dif.get("f20"))));
+            stockInfo.setTradeMarketValue(new BigDecimal(defaultString(dif.get("f21"))));
+            return stockInfo;
+          } catch (Exception e) {
+            logger.error(JSON.toJSONString(dif), e);
+            throw e;
+          }
+        }).collect(Collectors.toList());
+        if (tempStocks == null) {
+          break;
+        }
+        stockInfos.addAll(tempStocks);
+        if (tempStocks.size() < pageSize) {
           break;
         }
       }

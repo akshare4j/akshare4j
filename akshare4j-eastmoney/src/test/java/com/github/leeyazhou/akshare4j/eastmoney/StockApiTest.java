@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
+import com.github.leeyazhou.akshare4j.eastmoney.model.StockBoardIndustryInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockIndivalInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.StockInfo;
 import com.github.leeyazhou.akshare4j.eastmoney.model.enums.MarketType;
@@ -46,6 +47,7 @@ class StockApiTest {
     System.out.println(stocks.size());
   }
 
+
   @Test
   public void testStock_hk_spot_em() {
     List<StockInfo> stocks = StockApi.stock_hk_spot_em();
@@ -55,5 +57,21 @@ class StockApiTest {
         .collect(Collectors.toList());
     // System.out.println(JSON.toJSONString(stocks));
     System.out.println(stocks.size());
+  }
+
+  @Test
+  public void testStock_board_industry_name_em() {
+    List<StockBoardIndustryInfo> stocks = StockApi.stock_board_industry_name_em();
+    System.out.println(JSON.toJSONString(stocks));
+    System.out.println(stocks.size());
+  }
+
+  @Test
+  public void testStock_board_industry_cons_em() {
+    List<StockInfo> stocks = StockApi.stock_board_industry_cons_em("BK1027");
+
+    System.out.println(JSON.toJSONString(stocks));
+    System.out.println(stocks.size());
+
   }
 }
