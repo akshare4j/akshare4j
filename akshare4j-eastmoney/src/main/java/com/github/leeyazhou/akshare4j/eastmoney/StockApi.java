@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +33,6 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
 public class StockApi {
   private static final Logger logger = LoggerFactory.getLogger(StockApi.class);
   private static final Map<String, String> symbolsMap = new ConcurrentHashMap<String, String>();
-  public static String userAgent =
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
 
   /**
    * 东方财富-股票和市场代码
@@ -68,7 +65,7 @@ public class StockApi {
       params.put("_", currentTime());
 
       RequestContext context = RequestContext.newContext(url);
-      context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+      StockHistoryApi.initHttpHeaders(context);
       context.setParams(params);
       HttpResponse httpResponse = HttpUtil.getInstance().get(context);
       logger.info("querySymbolMap1: {}", httpResponse.getResponse());
@@ -99,8 +96,7 @@ public class StockApi {
       params.put("_", currentTime());
 
       RequestContext context = RequestContext.newContext(url);
-      context.addHeader(HttpHeaders.USER_AGENT, userAgent);
-      context = RequestContext.newContext(url);
+      StockHistoryApi.initHttpHeaders(context);
       context.setParams(params);
       HttpResponse httpResponse = HttpUtil.getInstance().get(context);
       EastMoneyResult<DataWrapper<Map<String, String>>> clist2 = JSON.parseObject(httpResponse.getResponse(),
@@ -137,7 +133,7 @@ public class StockApi {
     // "f189": "上市时间",
     String url = "http://push2.eastmoney.com/api/qt/stock/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");
     params.put("fltt", "2");
@@ -177,7 +173,7 @@ public class StockApi {
   public static List<StockInfo> stock_zh_a_spot_em() {
     String url = "https://push2.eastmoney.com/api/qt/clist/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     int pageSize = 20;
     int currentPage = 1;
@@ -287,7 +283,7 @@ public class StockApi {
   public static List<StockInfo> stock_hk_spot_em() {
     String url = "https://72.push2.eastmoney.com/api/qt/clist/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     int pageSize = 20;
     int currentPage = 1;
@@ -400,7 +396,7 @@ public class StockApi {
   public static List<StockInfo> stock_us_spot_em() {
     String url = "https://72.push2.eastmoney.com/api/qt/clist/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     int pageSize = 20;
     int currentPage = 1;
@@ -518,7 +514,7 @@ public class StockApi {
   public static List<StockBoardIndustryInfo> stock_board_industry_name_em() {
     String url = "https://17.push2.eastmoney.com/api/qt/clist/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     int pageSize = 20;
     int currentPage = 1;
@@ -650,7 +646,7 @@ public class StockApi {
   public static List<StockInfo> stock_board_industry_cons_em(String symbol) {
     final String url = "https://29.push2.eastmoney.com/api/qt/clist/get";
     RequestContext context = RequestContext.newContext(url);
-    context.addHeader(HttpHeaders.USER_AGENT, userAgent);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     int pageSize = 100;
     int currentPage = 1;

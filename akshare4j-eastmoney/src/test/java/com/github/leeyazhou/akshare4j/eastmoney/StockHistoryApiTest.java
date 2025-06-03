@@ -25,7 +25,7 @@ class StockHistoryApiTest {
     String start_date = "20240301";
     String end_date = "20240528";
     List<KlineInfo> klines =
-        StockHistoryApi.getKlines(symbol, MarketType.HK, start_date, end_date, KlinePeriod.daily, Adjust.QFQ);
+        StockHistoryApi.getKlines(symbol, MarketType.SH, start_date, end_date, KlinePeriod.daily, Adjust.QFQ);
     System.out.println(JSON.toJSONString(klines));
 
   }

@@ -6,6 +6,7 @@ package com.github.leeyazhou.akshare4j.eastmoney;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,15 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
 public class StockHistoryApi {
   private static final Logger logger = LoggerFactory.getLogger(StockHistoryApi.class);
 
+  public static void initHttpHeaders(RequestContext context) {
+    context.addHeader(HttpHeaders.USER_AGENT,
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36");
+    context.addHeader(HttpHeaders.REFERER, "https://quote.eastmoney.com/concept/sh603777.html?from=classic");
+    context.addHeader(HttpHeaders.ACCEPT, "application/json, text/plain, */*");
+    context.addHeader(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+    context.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9");
+    context.addHeader(HttpHeaders.CONNECTION, "keep-alive");
+  }
   /**
    * 东方财富网-行情首页-沪深京 A 股-每日行情
    * 
@@ -46,22 +56,29 @@ public class StockHistoryApi {
       KlinePeriod klinePeriod, Adjust adjust) {
     String url = "https://push2his.eastmoney.com/api/qt/stock/kline/get";
     RequestContext context = RequestContext.newContext(url);
+    initHttpHeaders(context);
     JSONObject params = new JSONObject();
     params.put("fields1", "f1,f2,f3,f4,f5,f6");
     params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116");
-    params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
+    params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");
     params.put("klt", klinePeriod.getCode());
     params.put("fqt", adjust.getCode());
     // params.put("secid", String.format("%s.%s", StockApi.querySymbolMap().get(symbol), symbol));
     params.put("secid", String.format("%s.%s", marketType.getCode(), symbol));
     params.put("beg", startDate);
     params.put("end", endDate);
-    params.put("_", currentTime());
+    params.put("limit", "210");
+    params.put("cb", "quote_jp7");
     context.setParams(params);
     try (CloseableHttpClient httpClient = HttpClientUtil.getInstance().createHttpClient(2)) {
+      logger.info("requstBody: {}", JSON.toJSONString(context.getParams()));
       HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
+      String response = httpResponse.getResponse();
+      if (response.startsWith("quote_jp7(")) {
+        response = response.substring("quote_jp7(".length(), response.length() - 2);
+      }
       EastMoneyResult<KlineResult> result =
-          JSON.parseObject(httpResponse.getResponse(), new TypeReference<EastMoneyResult<KlineResult>>() {}.getType());
+          JSON.parseObject(response, new TypeReference<EastMoneyResult<KlineResult>>() {}.getType());
       if (result.getData() == null || result.getData().getKlines() == null) {
         return null;
       }
@@ -103,6 +120,7 @@ public class StockHistoryApi {
       Adjust adjust) {
     String url = "https://63.push2his.eastmoney.com/api/qt/stock/kline/get";
     RequestContext context = RequestContext.newContext(url);
+    initHttpHeaders(context);
     JSONObject params = new JSONObject();
     params.put("secid", symbol);
     params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");

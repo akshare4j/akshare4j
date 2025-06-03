@@ -55,6 +55,7 @@ public class ETFApi {
     params.put("fields", "f2,f3,f4,f5,f6,f7,f8,f10,f12,f13,f14,f15,f16,f17,f18");
     params.put("_", "1623833739532");
     RequestContext context = RequestContext.newContext(url);
+    StockHistoryApi.initHttpHeaders(context);
     context.setParams(params);
     HttpResponse httpResponse = HttpUtil.getInstance().get(context);
     logger.info("queryETFList: {}", httpResponse.getResponse());
@@ -98,6 +99,7 @@ public class ETFApi {
     }
     String url = "https://push2his.eastmoney.com/api/qt/stock/kline/get";
     RequestContext context = RequestContext.newContext(url);
+    StockHistoryApi.initHttpHeaders(context);
     JSONObject params = new JSONObject();
     params.put("secid", String.format("%s.%s", market, symbol));
     params.put("ut", "f057cbcbce2a86e2866ab8877db1d059");
@@ -147,10 +149,6 @@ public class ETFApi {
       return "0";
     }
     return value;
-  }
-
-  private static String currentTime() {
-    return String.valueOf(System.currentTimeMillis());
   }
 
 }
