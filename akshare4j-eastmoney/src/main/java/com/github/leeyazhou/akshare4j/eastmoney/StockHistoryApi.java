@@ -6,8 +6,8 @@ package com.github.leeyazhou.akshare4j.eastmoney;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.http.HttpHeaders;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
@@ -36,7 +36,7 @@ public class StockHistoryApi {
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36");
     context.addHeader(HttpHeaders.REFERER, "https://quote.eastmoney.com/concept/sh603777.html?from=classic");
     context.addHeader(HttpHeaders.ACCEPT, "application/json, text/plain, */*");
-    context.addHeader(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+//    context.addHeader(HttpHeaders.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
     context.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9");
     context.addHeader(HttpHeaders.CONNECTION, "keep-alive");
   }

@@ -2,8 +2,7 @@ package com.github.leeyazhou.akshare4j.util.http;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
-import org.apache.http.Consts;
-import org.apache.http.util.CharArrayBuffer;
+import org.apache.hc.core5.util.CharArrayBuffer;
 
 /**
  * 
@@ -15,17 +14,17 @@ public enum HttpContentType implements Serializable {
   /**
    * application/atom+xml
    */
-  APPLICATION_ATOM_XML("application/atom+xml", Consts.UTF_8),
+  APPLICATION_ATOM_XML("application/atom+xml", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/x-www-form-urlencoded
    */
-  APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded", Consts.UTF_8),
+  APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/json
    */
-  APPLICATION_JSON("application/json", Consts.UTF_8),
+  APPLICATION_JSON("application/json", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/octet-stream
@@ -35,42 +34,42 @@ public enum HttpContentType implements Serializable {
   /**
    * application/soap+xml
    */
-  APPLICATION_SOAP_XML("application/soap+xml", Consts.UTF_8),
+  APPLICATION_SOAP_XML("application/soap+xml", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/svg+xml
    */
-  APPLICATION_SVG_XML("application/svg+xml", Consts.UTF_8),
+  APPLICATION_SVG_XML("application/svg+xml", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/xhtml+xml
    */
-  APPLICATION_XHTML_XML("application/xhtml+xml", Consts.UTF_8),
+  APPLICATION_XHTML_XML("application/xhtml+xml", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * application/xml
    */
-  APPLICATION_XML("application/xml", Consts.UTF_8),
+  APPLICATION_XML("application/xml", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * multipart/form-data
    */
-  MULTIPART_FORM_DATA("multipart/form-data", Consts.UTF_8),
+  MULTIPART_FORM_DATA("multipart/form-data", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * text/html
    */
-  TEXT_HTML("text/html", Consts.UTF_8),
+  TEXT_HTML("text/html", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * text/plain
    */
-  TEXT_PLAIN("text/plain", Consts.UTF_8),
+  TEXT_PLAIN("text/plain", Charset.forName(HttpConstants.CHARSET_UTF8)),
 
   /**
    * text/xml
    */
-  TEXT_XML("text/xml", Consts.UTF_8);
+  TEXT_XML("text/xml", Charset.forName(HttpConstants.CHARSET_UTF8));
 
 
 
@@ -78,7 +77,7 @@ public enum HttpContentType implements Serializable {
   private final Charset charset;
 
   private HttpContentType(final String mimeType) {
-    this(mimeType, null);
+    this(mimeType, Charset.forName(HttpConstants.CHARSET_UTF8));
   }
 
   private HttpContentType(final String mimeType, final Charset charset) {

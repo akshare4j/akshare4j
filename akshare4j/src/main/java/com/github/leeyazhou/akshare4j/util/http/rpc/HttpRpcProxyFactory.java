@@ -3,7 +3,7 @@ package com.github.leeyazhou.akshare4j.util.http.rpc;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import com.github.leeyazhou.akshare4j.util.http.rpc.serializer.JSONSerializer;
 import com.github.leeyazhou.akshare4j.util.http.rpc.serializer.Serializer;
 

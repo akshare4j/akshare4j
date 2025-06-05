@@ -6,35 +6,39 @@ import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ConnectTimeoutException;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.BrotliDecompressingEntity;
+import org.apache.hc.client5.http.entity.GzipDecompressingEntity;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.leeyazhou.akshare4j.util.http.TimeoutRequestReaper.RequestWrapper;
@@ -102,7 +106,7 @@ public class HttpUtil implements HttpService {
     return upload(context, null);
   }
 
-  private void fillProxyInfo(HttpRequestBase method, RequestContext context, HttpContext httpContext) {
+  private void fillProxyInfo(HttpUriRequestBase method, RequestContext context, HttpClientContext httpContext) {
     int readTimeout = DEFAULT_TIMEOUT, connectTimeout = DEFAULT_TIMEOUT;
     if (context.getReadTimeout() > 0) {
       readTimeout = context.getReadTimeout();
@@ -110,8 +114,10 @@ public class HttpUtil implements HttpService {
     if (context.getConnectTimeout() > 0) {
       connectTimeout = context.getConnectTimeout();
     }
-    RequestConfig.Builder builder = RequestConfig.custom().setConnectionRequestTimeout(connectTimeout)
-        .setSocketTimeout(readTimeout).setConnectTimeout(connectTimeout);
+    RequestConfig.Builder builder =
+        RequestConfig.custom().setConnectionRequestTimeout(Timeout.ofMilliseconds(connectTimeout))
+            .setResponseTimeout(Timeout.ofMilliseconds(readTimeout))
+            .setConnectTimeout(Timeout.ofMilliseconds(connectTimeout));
     if (context.getCookieSpec() != null) {
       builder.setCookieSpec(context.getCookieSpec());
     }
@@ -121,9 +127,10 @@ public class HttpUtil implements HttpService {
       builder.setProxy(proxy);
       if (proxyInfo.getUsername() != null) {
         builder.setAuthenticationEnabled(true);
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(proxyInfo.getHost(), proxyInfo.getPort()),
-            new UsernamePasswordCredentials(proxyInfo.getUsername(), proxyInfo.getPassword()));
+        CredentialsProvider credsProvider =
+            CredentialsProviderBuilder.create().add(new AuthScope(proxyInfo.getHost(), proxyInfo.getPort()),
+                proxyInfo.getUsername(), proxyInfo.getPassword().toCharArray()).build();
+        httpContext.setCredentialsProvider(credsProvider);
         httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER, credsProvider);
       }
       logger.debug("set http proxy, info : {}", proxyInfo);
@@ -161,7 +168,7 @@ public class HttpUtil implements HttpService {
       return null;
     }
     RequestWrapper requestWrapper = null;
-    HttpRequestBase httpRequest = null;
+    HttpUriRequestBase httpRequest = null;
     try {
       if (HttpMethod.GET.equals(method)) {
         httpRequest = new HttpGet(url);
@@ -172,7 +179,7 @@ public class HttpUtil implements HttpService {
       } else if (HttpMethod.DELETE.equals(method)) {
         httpRequest = new HttpDelete(url);
       }
-      HttpContext httpContext = new BasicHttpContext();
+      HttpClientContext httpContext = HttpClientContext.create();
       requestWrapper = new RequestWrapper(httpRequest, httpContext, context.getMaxTotalTimeout());
       TimeoutRequestReaper.registerRequest(requestWrapper);
       if (context.getParams() != null && !context.getParams().isEmpty()) {
@@ -185,26 +192,25 @@ public class HttpUtil implements HttpService {
           }
         }
         if (pairs.size() > 0) {
-          if (HttpMethod.GET.equals(method)) {
-            url += "?" + EntityUtils.toString(new UrlEncodedFormEntity(pairs, context.getCharset()));
-            httpRequest.setURI(URI.create(url));
+          HttpEntity entity = new UrlEncodedFormEntity(pairs, Charset.forName(context.getCharset()));
+          if (HttpMethod.GET.equals(method) || context.isUrlFormEncoded()) {
+            String seperator = url.contains("?") ? "&" : "?";
+            url += seperator + EntityUtils.toString(entity);
+            httpRequest.setUri(URI.create(url));
           } else if (HttpMethod.POST.equals(method)) {
-            HttpEntity entity = new UrlEncodedFormEntity(pairs, context.getCharset());
             ((HttpPost) httpRequest).setEntity(entity);
           }
         }
       } else if (context.hasRequestBody()) {
         HttpEntity entity = null;
         if (context.getRequestBodyByte() != null) {
-          if (context.getRequestBodyByte() != null) {
-            entity = new ByteArrayEntity(context.getRequestBodyByte());
-          } else {
-            entity = new ByteArrayEntity(context.getRequestBody().getBytes());
-          }
+          ContentType contentType =
+              ContentType.create(context.getContentType().getMimeType(), Charset.forName(context.getCharset()));
+          entity = new ByteArrayEntity(context.getRequestBodyByte(), contentType);
         } else {
-          entity = new StringEntity(context.getRequestBody(), CHARSET_UTF8);
+          entity = new StringEntity(context.getRequestBody(), Charset.forName(context.getCharset()));
         }
-        ((HttpPost) httpRequest).setEntity(entity);
+        ((ClassicHttpRequest) httpRequest).setEntity(entity);
       }
 
       for (Map.Entry<String, String> entry : context.getHeaders().entrySet()) {
@@ -220,8 +226,8 @@ public class HttpUtil implements HttpService {
       }
 
       CloseableHttpResponse response = httpClient.execute(httpRequest, httpContext);
-      if (response != null && response.getStatusLine().getStatusCode() != 200) {
-        logger.info("响应状态：{}, url: {}", response.getStatusLine(), url);
+      if (response != null && response.getCode() != 200) {
+        logger.info("响应状态：{}, url: {}", response.getCode(), url);
       }
       return response;
     } catch (SocketException e) {
@@ -258,7 +264,7 @@ public class HttpUtil implements HttpService {
     try {
       HttpPost httppost = new HttpPost(context.getUrl());
       MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-      builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+      builder.setMode(HttpMultipartMode.STRICT);
       if (inputStream != null) {
         builder.addBinaryBody("file", inputStream);
       } else {
@@ -268,14 +274,14 @@ public class HttpUtil implements HttpService {
       httppost.setEntity(reqEntity);
       CloseableHttpResponse response = HttpClientUtil.getInstance().getHttpClient().execute(httppost);
       try {
-        logger.info("upload status : {}, url : {}", response.getStatusLine(), context.getUrl());
+        logger.info("upload status : {}, url : {}", response.getCode(), context.getUrl());
         HttpEntity resEntity = response.getEntity();
         String responseEntityStr = null;
         if (resEntity != null) {
           responseEntityStr = EntityUtils.toString(response.getEntity());
         }
         logger.info("响应数据: {}", responseEntityStr);
-        httpResponse.setCode(response.getStatusLine().getStatusCode());
+        httpResponse.setCode(response.getCode());
         httpResponse.setResponse(responseEntityStr);
       } finally {
         if (response != null) {
@@ -310,10 +316,17 @@ public class HttpUtil implements HttpService {
       if (response == null) {
         return httpResponse;
       }
-      String reponseStr = EntityUtils.toString(response.getEntity(), context.getCharset());
+      String reponseStr = null;
+      if (isGzip(response)) {
+        reponseStr = EntityUtils.toString(new GzipDecompressingEntity(response.getEntity()), context.getCharset());
+      } else if (isBr(response)) {
+        reponseStr = EntityUtils.toString(new BrotliDecompressingEntity(response.getEntity()), context.getCharset());
+      } else {
+        reponseStr = EntityUtils.toString(response.getEntity(), context.getCharset());
+      }
       httpResponse.setResponse(reponseStr);
-      httpResponse.setCode(response.getStatusLine().getStatusCode());
-      httpResponse.setHeaders(response.getAllHeaders());
+      httpResponse.setCode(response.getCode());
+      httpResponse.setHeaders(response.getHeaders());
     } catch (Exception e) {
       logger.error("请求异常url : " + context.getUrl(), e);
       httpResponse.setMessage("fail:" + e.getMessage());
@@ -335,10 +348,17 @@ public class HttpUtil implements HttpService {
       if (response == null) {
         return httpResponse;
       }
-      byte[] reponse = EntityUtils.toByteArray(response.getEntity());
+      byte[] reponse = null;
+      if (isGzip(response)) {
+        reponse = EntityUtils.toByteArray(new GzipDecompressingEntity(response.getEntity()));
+      } else if (isBr(response)) {
+        reponse = EntityUtils.toByteArray(new BrotliDecompressingEntity(response.getEntity()));
+      } else {
+        reponse = EntityUtils.toByteArray(response.getEntity());
+      }
       httpResponse.setResponse(reponse);
-      httpResponse.setCode(response.getStatusLine().getStatusCode());
-      httpResponse.setHeaders(response.getAllHeaders());
+      httpResponse.setCode(response.getCode());
+      httpResponse.setHeaders(response.getHeaders());
     } catch (Exception e) {
       logger.error("请求异常url : " + context.getUrl(), e);
       httpResponse.setMessage("fail:" + e.getMessage());
@@ -350,5 +370,29 @@ public class HttpUtil implements HttpService {
       httpResponse.complete();
     }
     return httpResponse;
+  }
+
+  private boolean isGzip(CloseableHttpResponse response) {
+    Header[] headers = response.getHeaders("Content-Encoding");
+    boolean isGzip = false;
+    for (Header h : headers) {
+      if (h.getValue().equals("gzip")) {
+        isGzip = true;
+        break;
+      }
+    }
+    return isGzip;
+  }
+
+  private boolean isBr(CloseableHttpResponse response) {
+    Header[] headers = response.getHeaders("Content-Encoding");
+    boolean isGzip = false;
+    for (Header h : headers) {
+      if (h.getValue().equals("br")) {
+        isGzip = true;
+        break;
+      }
+    }
+    return isGzip;
   }
 }

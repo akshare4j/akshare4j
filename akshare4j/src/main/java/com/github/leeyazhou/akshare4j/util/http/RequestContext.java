@@ -30,6 +30,7 @@ public class RequestContext {
 
   private int maxRetryTimes;
 
+  private boolean urlFormEncoded;
   /**
    * 构建请求上下文
    *
@@ -238,5 +239,19 @@ public class RequestContext {
    */
   public HttpContentType getContentType() {
     return contentType;
+  }
+  
+  /**
+   * @param urlFormEncoded the urlFormEncoded to set
+   */
+  public void setUrlFormEncoded(boolean urlFormEncoded) {
+    this.urlFormEncoded = urlFormEncoded;
+  }
+  
+  /**
+   * @return the urlFormEncoded
+   */
+  public boolean isUrlFormEncoded() {
+    return urlFormEncoded;
   }
 }

@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,19 +111,19 @@ public final class TimeoutRequestReaper extends Thread {
 
   static class RequestWrapper {
     private final int id;
-    private final HttpRequestBase request;
+    private final HttpUriRequest request;
     private final long startTime = System.currentTimeMillis();
     private long maxTimeout;
     private final HttpContext httpContext;
     private int maxRetryTimes;
 
-    public RequestWrapper(HttpRequestBase request, HttpContext httpContext) {
+    public RequestWrapper(HttpUriRequest request, HttpContext httpContext) {
       this.id = index.incrementAndGet();
       this.request = request;
       this.httpContext = httpContext;
     }
 
-    public RequestWrapper(HttpRequestBase request, HttpContext httpContext, int maxTotalTimeout) {
+    public RequestWrapper(HttpUriRequest request, HttpContext httpContext, int maxTotalTimeout) {
       this(request, httpContext);
       this.maxTimeout = maxTotalTimeout;
     }
@@ -150,12 +150,20 @@ public final class TimeoutRequestReaper extends Thread {
       if (maxTimeout <= 0) {
         RequestConfig requestConfig = request.getConfig();
         if (requestConfig != null) {
-          this.maxTimeout = request.getConfig().getSocketTimeout() + request.getConfig().getConnectionRequestTimeout()
-              + request.getConfig().getConnectTimeout();
+          this.maxTimeout = 0;
+          if (requestConfig.getConnectTimeout() != null) {
+            this.maxTimeout += requestConfig.getConnectTimeout().toMilliseconds();
+          }
+          if (requestConfig.getResponseTimeout() != null) {
+            this.maxTimeout += requestConfig.getResponseTimeout().toMilliseconds();
+          }
+          if (requestConfig.getConnectionRequestTimeout() != null) {
+            this.maxTimeout += requestConfig.getConnectionRequestTimeout().toMilliseconds();
+          }
         }
       }
       if (maxTimeout <= 0) {
-        this.maxTimeout = HttpUtil.DEFAULT_TIMEOUT * 3;
+        this.maxTimeout = HttpConstants.DEFAULT_TIMEOUT * 3;
       }
       return maxTimeout;
     }

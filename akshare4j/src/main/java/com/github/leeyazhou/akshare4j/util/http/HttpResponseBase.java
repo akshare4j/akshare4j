@@ -3,7 +3,7 @@ package com.github.leeyazhou.akshare4j.util.http;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.Header;
+import org.apache.hc.core5.http.Header;
 
 /** @author leeyazhou */
 public class HttpResponseBase {
