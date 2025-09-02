@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.bytesgo</groupId>
-    <artifactId>parent</artifactId>
-    <version>5</version>
+    <artifactId>bytesgo-parent</artifactId>
+    <version>7</version>
   </parent>
   <groupId>com.github.leeyazhou</groupId>
   <artifactId>akshare4j-parent</artifactId>
@@ -34,7 +34,7 @@
     <maven.formatter.plugin.version>2.16.1</maven.formatter.plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <revision>0.0.10</revision>
+    <revision>0.0.11-SNAPSHOT</revision>
     <spring.boot.version>2.7.18</spring.boot.version>
   </properties>
 
@@ -140,86 +140,4 @@
       </plugin>
     </plugins>
   </reporting>
-  <profiles>
-    <profile>
-      <id>release-github</id>
-      <distributionManagement>
-        <repository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-      </distributionManagement>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <configuration>
-              <attach>true</attach>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-                <phase>verify</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                  <goal>aggregate</goal>
-                </goals>
-                <phase>verify</phase>
-                <configuration>
-                  <charset>${project.build.sourceEncoding}</charset>
-                  <encoding>${project.build.sourceEncoding}</encoding>
-                  <docencoding>${project.build.sourceEncoding}</docencoding>
-                  <additionalJOption>-Xdoclint:none</additionalJOption>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <configuration>
-              <gpgArguments>
-                <arg>--pinentry-mode</arg>
-                <arg>loopback</arg>
-              </gpgArguments>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-                <phase>verify</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>ossrh</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
