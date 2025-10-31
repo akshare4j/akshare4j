@@ -16,7 +16,7 @@ public class TencentStockInfo {
   /**
    * 换手率
    */
-  private String hsl;
+  private BigDecimal hsl;
   private String name;
   private String state;
   private String stockType;
@@ -52,11 +52,11 @@ public class TencentStockInfo {
     this.code = code;
   }
 
-  public String getHsl() {
+  public BigDecimal getHsl() {
     return hsl;
   }
 
-  public void setHsl(String hsl) {
+  public void setHsl(BigDecimal hsl) {
     this.hsl = hsl;
   }
 
