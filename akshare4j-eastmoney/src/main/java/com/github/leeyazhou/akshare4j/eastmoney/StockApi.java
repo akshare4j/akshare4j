@@ -198,7 +198,7 @@ public class StockApi {
         params.put("pn", currentPage++);
         if (currentPage > 1) {
           int sleep = 3000;
-          ThreadUtils.sleep(Duration.ofSeconds(sleep));
+          ThreadUtils.sleep(Duration.ofMillis(sleep));
           logger.info("thread sleep {} ms for next page: {}", sleep, currentPage);
         }
         HttpResponse httpResponse = HttpUtil.getInstance().get(context, httpClient);
