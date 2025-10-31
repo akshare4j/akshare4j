@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.github.leeyazhou.akshare4j.tencent.model.ApiResult;
-import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.KLineResponse;
+import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
@@ -34,7 +34,11 @@ public class TencentStockHistoryApi {
     int fetchCount = 3;
     limit = limit <= 0 ? 370 : limit;
     while (fetchCount-- > 0) {
-      List<TencentKLineInfo> batchData = doFetchKlineDatas(symbol, marketType, ktype, fqtype, startDate, endDate, limit);
+      List<TencentKLineInfo> batchData =
+          doFetchKlineDatas(symbol, marketType, ktype, fqtype, startDate, endDate, limit);
+      if (batchData == null) {
+        break;
+      }
       allData.addAll(batchData);
 
       if (batchData.size() < limit) {
@@ -44,13 +48,13 @@ public class TencentStockHistoryApi {
     return allData;
   }
 
-  public static List<TencentKLineInfo> fetchKlineBatch(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
-      TencentAdjust fqtype, String toDate, String endTime, int limit) throws Exception {
+  public static List<TencentKLineInfo> fetchKlineBatch(String code, TencentMarketType marketType,
+      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endTime, int limit) throws Exception {
     return doFetchKlineDatas(code, marketType, ktype, fqtype, toDate, endTime, limit);
   }
 
-  private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
-      TencentAdjust fqtype, String toDate, String endDate, int limit) {
+  private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType,
+      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endDate, int limit) {
     long timestamp = System.currentTimeMillis();
 
     StringBuilder url = new StringBuilder();
