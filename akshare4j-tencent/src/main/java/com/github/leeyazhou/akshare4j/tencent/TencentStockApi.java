@@ -96,7 +96,7 @@ public class TencentStockApi {
         .addHeader("Accept-Language", "en-US,en;q=0.9")//
         .addHeader("Connection", "keep-alive")//
         .addHeader("Origin", "https://wzq.tenpay.com")//
-        .addHeader("Referer", "https://servicewechat.com/wx4eff699c2e813ab6/554/page-frame.html")//
+        .addHeader("Referer", "https://wzq.tenpay.com/")//
         .addHeader("Sec-Fetch-Dest", "empty")//
         .addHeader("Sec-Fetch-Mode", "cors")//
         .addHeader("xweb_xhr", "1")//
