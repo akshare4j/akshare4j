@@ -3,7 +3,7 @@ package com.github.leeyazhou.akshare4j.tencent.model;
 import java.math.BigDecimal;
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class KLineData {
+public class TencentKLineInfo {
   private BigDecimal open;
   @JSONField(alternateNames = "last")
   private BigDecimal close;

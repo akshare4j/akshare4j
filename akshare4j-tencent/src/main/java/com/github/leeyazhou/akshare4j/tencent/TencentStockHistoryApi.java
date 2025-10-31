@@ -13,10 +13,11 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.github.leeyazhou.akshare4j.tencent.model.ApiResult;
-import com.github.leeyazhou.akshare4j.tencent.model.KLineData;
+import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.KLineResponse;
-import com.github.leeyazhou.akshare4j.tencent.model.enums.FqType;
-import com.github.leeyazhou.akshare4j.tencent.model.enums.KLineType;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
 import com.github.leeyazhou.akshare4j.util.http.HttpResponse;
 import com.github.leeyazhou.akshare4j.util.http.HttpUtil;
 import com.github.leeyazhou.akshare4j.util.http.RequestContext;
@@ -27,13 +28,13 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
 public class TencentStockHistoryApi {
   private static final Logger logger = LoggerFactory.getLogger(TencentStockHistoryApi.class);
 
-  public static List<KLineData> getKlineDatas(String symbol, KLineType ktype, FqType fqtype) {
-    List<KLineData> allData = new ArrayList<>();
-    String toDate = null;
+  public static List<TencentKLineInfo> getKlines(String symbol, TencentMarketType marketType, TencentKlinePeriod ktype,
+      TencentAdjust fqtype, String startDate, String endDate, int limit) {
+    List<TencentKLineInfo> allData = new ArrayList<>();
     int fetchCount = 3;
-    int limit = 370;
+    limit = limit <= 0 ? 370 : limit;
     while (fetchCount-- > 0) {
-      List<KLineData> batchData = doFetchKlineDatas(symbol, ktype, fqtype, toDate, null, limit);
+      List<TencentKLineInfo> batchData = doFetchKlineDatas(symbol, marketType, ktype, fqtype, startDate, endDate, limit);
       allData.addAll(batchData);
 
       if (batchData.size() < limit) {
@@ -43,26 +44,18 @@ public class TencentStockHistoryApi {
     return allData;
   }
 
-  public static List<KLineData> fetchLatestKlineData(String code, KLineType ktype, FqType fqtype, Long latestTimestamp)
-      throws Exception {
-    if (latestTimestamp == null) {
-      return fetchKlineBatch(code, ktype, fqtype, null, null, 370);
-    }
-    return fetchKlineBatch(code, ktype, fqtype, null, null, 100);
+  public static List<TencentKLineInfo> fetchKlineBatch(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
+      TencentAdjust fqtype, String toDate, String endTime, int limit) throws Exception {
+    return doFetchKlineDatas(code, marketType, ktype, fqtype, toDate, endTime, limit);
   }
 
-  public static List<KLineData> fetchKlineBatch(String code, KLineType ktype, FqType fqtype, String toDate,
-      String endTime, int limit) throws Exception {
-    return doFetchKlineDatas(code, ktype, fqtype, toDate, endTime, limit);
-  }
-
-  private static List<KLineData> doFetchKlineDatas(String code, KLineType ktype, FqType fqtype, String toDate,
-      String endTime, int limit) {
+  private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
+      TencentAdjust fqtype, String toDate, String endDate, int limit) {
     long timestamp = System.currentTimeMillis();
 
     StringBuilder url = new StringBuilder();
     url.append("https://proxy.finance.qq.com/cgi/cgi-bin/stockinfoquery/kline/app/get");
-    url.append("?code=").append(code)//
+    url.append("?code=").append(marketType.getCode() + code)//
         .append("&ktype=").append(ktype.getCode())//
         .append("&fqtype=").append(fqtype.getCode())//
         .append("&limit=").append(limit)//
@@ -76,8 +69,8 @@ public class TencentStockHistoryApi {
     if (toDate != null) {
       url.append("&toDate=").append(encode(toDate));
     }
-    if (endTime != null) {
-      url.append("&endTime=").append(encode(endTime));
+    if (endDate != null) {
+      url.append("&endTime=").append(encode(endDate));
     }
 
     RequestContext context = RequestContext.newContext(url.toString());

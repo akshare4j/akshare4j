@@ -6,11 +6,13 @@ package com.github.leeyazhou.akshare4j.tencent.model.enums;
 /**
  * @author leeyazhou
  */
-public enum KLineType {
+public enum TencentAdjust {
 
-  Day("day", "日线"),
+  QFQ("qfq", "前复权"),
 
-  Week("week", "周线");
+  HFQ("hfq", "后复权"),
+
+  NONE("none", "不复权");
 
   private String code;
   private String desc;
@@ -18,7 +20,7 @@ public enum KLineType {
   /**
    * 
    */
-  private KLineType(String code, String desc) {
+  private TencentAdjust(String code, String desc) {
     this.code = code;
     this.desc = desc;
   }

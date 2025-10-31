@@ -6,13 +6,11 @@ package com.github.leeyazhou.akshare4j.tencent.model.enums;
 /**
  * @author leeyazhou
  */
-public enum FqType {
+public enum TencentKlinePeriod {
 
-  QFQ("qfq", "前复权"),
+  Day("day", "日线"),
 
-  HFQ("hfq", "后复权"),
-
-  NONE("none", "不复权");
+  Week("week", "周线");
 
   private String code;
   private String desc;
@@ -20,7 +18,7 @@ public enum FqType {
   /**
    * 
    */
-  private FqType(String code, String desc) {
+  private TencentKlinePeriod(String code, String desc) {
     this.code = code;
     this.desc = desc;
   }

@@ -6,9 +6,10 @@ package com.github.leeyazhou.akshare4j.tencent;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
-import com.github.leeyazhou.akshare4j.tencent.model.KLineData;
-import com.github.leeyazhou.akshare4j.tencent.model.enums.FqType;
-import com.github.leeyazhou.akshare4j.tencent.model.enums.KLineType;
+import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
 
 /**
  * @author leeyazhou
@@ -17,11 +18,11 @@ class TencentStockHistoryApiTest {
 
   @Test
   void testFetchCompleteKlineData() {
-    List<KLineData> fetchCompleteKlineData =
-        TencentStockHistoryApi.getKlineDatas("sh603005", KLineType.Day, FqType.QFQ);
+    List<TencentKLineInfo> fetchCompleteKlineData = TencentStockHistoryApi.getKlines("603005", TencentMarketType.SH,
+        TencentKlinePeriod.Day, TencentAdjust.QFQ, null, null, 0);
     System.out.println("size=" + fetchCompleteKlineData.size());
-    for (KLineData kLineData : fetchCompleteKlineData) {
-      System.out.println(JSON.toJSONString(kLineData));
+    for (TencentKLineInfo tencentKLineInfo : fetchCompleteKlineData) {
+      System.out.println(JSON.toJSONString(tencentKLineInfo));
     }
   }
 
