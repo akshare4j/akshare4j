@@ -3,7 +3,9 @@
  */
 package com.github.leeyazhou.akshare4j.tencent;
 
+import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
@@ -18,6 +20,7 @@ class TencentStockHistoryApiTest {
 
   @Test
   void testFetchCompleteKlineData() {
+    String endDate = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
     List<TencentKLineInfo> fetchCompleteKlineData = TencentStockHistoryApi.getKlines("603005", TencentMarketType.SH,
         TencentKlinePeriod.Day, TencentAdjust.QFQ, null, null, 0);
     System.out.println("size=" + fetchCompleteKlineData.size());

@@ -3,11 +3,8 @@
  */
 package com.github.leeyazhou.akshare4j.tencent;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
@@ -55,7 +52,6 @@ public class TencentStockHistoryApi {
 
   private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType,
       TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endDate, int limit) {
-    long timestamp = System.currentTimeMillis();
 
     StringBuilder url = new StringBuilder();
     url.append("https://proxy.finance.qq.com/cgi/cgi-bin/stockinfoquery/kline/app/get");
@@ -68,13 +64,13 @@ public class TencentStockHistoryApi {
         .append("&scenes=").append("6")//
         .append("&xcxname=").append("wzqxcx")//
         .append("&come_from=").append("3")//
-        .append("&t=").append(timestamp);
+        .append("&t=").append(System.currentTimeMillis());
 
     if (toDate != null) {
-      url.append("&toDate=").append(encode(toDate));
+      url.append("&toDate=").append(toDate);
     }
     if (endDate != null) {
-      url.append("&endTime=").append(encode(endDate));
+      url.append("&endTime=").append(endDate);
     }
 
     RequestContext context = RequestContext.newContext(url.toString());
@@ -102,18 +98,6 @@ public class TencentStockHistoryApi {
     }
     return apiResponse.getData().getNodes();
   }
-
-
-
-  private static String encode(String s) {
-    try {
-      return URLEncoder.encode(Objects.toString(s, ""), "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return s;
-  }
-
 
 
 }
