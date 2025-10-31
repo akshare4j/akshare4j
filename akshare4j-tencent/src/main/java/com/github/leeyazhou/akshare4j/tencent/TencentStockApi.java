@@ -29,7 +29,17 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
 public class TencentStockApi {
   private static final Logger logger = LoggerFactory.getLogger(TencentStockApi.class);
 
-  public static List<TencentStockInfo> getStockList(TencentMarketType marketType) {
+  /**
+   * 获取指数成分股列表
+   * 
+   * @return
+   */
+  public static List<TencentStockInfo> getBoardRankList() {
+    // sh000985
+    return getBoardRankList("sh000985");
+  }
+
+  public static List<TencentStockInfo> getBoardRankList(String boardCode) {
     StockListReqest request = new StockListReqest();
     request.setAppVer("11.11");
     request.setSource("wzqxcx");
@@ -39,25 +49,21 @@ public class TencentStockApi {
     request.setScenes("6");
     request.setXcxname("wzqxcx");
     request.setComeFrom("3");
-    if (TencentMarketType.SH.equals(marketType)) {
-      request.setBoardCode("sh000001");
-    } else if (TencentMarketType.SZ.equals(marketType)) {
-      request.setBoardCode("sz399001");
-    }
+    request.setBoardCode(boardCode);
     List<TencentStockInfo> allData = new ArrayList<>();
     int fetchCount = 30;
     int offset = 0;
     final int limit = 200;
     while (fetchCount-- > 0) {
       request.setOffset(offset);
-      List<TencentStockInfo> stockList = doGetStockList(request);
+      List<TencentStockInfo> stockList = doGetBoardRankList(request);
       if (stockList == null || stockList.size() == 0) {
         break;
       }
       allData.addAll(stockList);
-      logger.info("query stockListBatch, marketType: {}, offset: {}, size: {}", marketType, offset, stockList.size());
+      logger.info("getBoardRankList, boardCode: {}, offset: {}, stockListSize: {}", boardCode, offset,
+          stockList.size());
       if (stockList.size() < limit) {
-        logger.info("stockList size: {}, offset: {}, limit: {}", stockList.size(), offset, limit);
         break;
       }
       offset += limit;
@@ -78,7 +84,7 @@ public class TencentStockApi {
     }).collect(Collectors.toList());
   }
 
-  public static List<TencentStockInfo> doGetStockList(StockListReqest request) {
+  public static List<TencentStockInfo> doGetBoardRankList(StockListReqest request) {
     StringBuilder url = new StringBuilder("https://proxy.finance.qq.com/cgi/cgi-bin/rank/hs/getBoardRankList");
     RequestContext context = RequestContext.newContext(url.toString());
     JSONObject requestJSON = JSON.parseObject(JSON.toJSONString(request));
