@@ -12,12 +12,28 @@ import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
 public class TencentStockInfo {
 
   private String code;
+  
+  /**
+   * 换手率
+   */
   private String hsl;
   private String name;
   private String state;
   private String stockType;
+  
+  /**
+   * 成交量
+   */
   private BigDecimal volume;
+  
+  /**
+   * 涨跌额
+   */
   private BigDecimal zd;
+  
+  /**
+   * 正跌幅百分比
+   */
   private BigDecimal zdf;
 
   private TencentMarketType marketType;
