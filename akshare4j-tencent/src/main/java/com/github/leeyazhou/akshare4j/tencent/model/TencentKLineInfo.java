@@ -4,16 +4,45 @@ import java.math.BigDecimal;
 import com.alibaba.fastjson2.annotation.JSONField;
 
 public class TencentKLineInfo {
-  private BigDecimal open;
-  @JSONField(alternateNames = "last")
-  private BigDecimal close;
-  private BigDecimal high;
-  private BigDecimal low;
-  private BigDecimal volume;
-  private BigDecimal exchange;
-  private BigDecimal exchangeRaw;
+
   @JSONField(ordinal = 0)
   private String date;
+  /**
+   * 开盘价
+   */
+  private BigDecimal open;
+
+  /**
+   * 收盘价
+   */
+  @JSONField(alternateNames = "last")
+  private BigDecimal close;
+
+  /**
+   * 最高价
+   */
+  private BigDecimal high;
+
+  /**
+   * 最低价
+   */
+  private BigDecimal low;
+
+  /**
+   * 交易量
+   */
+  private BigDecimal volume;
+
+  /**
+   * 交易额
+   */
+  private BigDecimal amount;
+
+  /**
+   * 换手率
+   */
+  private BigDecimal exchange;
+  private BigDecimal exchangeRaw;
 
 
   public BigDecimal getOpen() {
@@ -78,6 +107,14 @@ public class TencentKLineInfo {
 
   public void setExchangeRaw(BigDecimal exchangeRaw) {
     this.exchangeRaw = exchangeRaw;
+  }
+
+  public BigDecimal getAmount() {
+    return amount;
+  }
+
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
   }
 
 
