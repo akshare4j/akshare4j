@@ -71,7 +71,7 @@ public class TencentStockApi {
     }
     return allData.stream().map(stock -> {
       String mt = stock.getCode().substring(0, 2);
-      String symbol = stock.getCode().substring(3, stock.getCode().length());
+      String symbol = stock.getCode().substring(2, stock.getCode().length());
       stock.setMarketType(TencentMarketType.of(mt));
       stock.setSymbol(symbol);
       return stock;
