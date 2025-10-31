@@ -42,7 +42,7 @@ public class TencentStockApi {
     if (TencentMarketType.SH.equals(marketType)) {
       request.setBoardCode("sh000001");
     } else if (TencentMarketType.SZ.equals(marketType)) {
-      request.setBoardCode("sz000001");
+      request.setBoardCode("sz399001");
     }
     List<TencentStockInfo> allData = new ArrayList<>();
     int fetchCount = 30;
