@@ -4,7 +4,12 @@
 package com.github.leeyazhou.akshare4j.tencent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
@@ -24,25 +29,29 @@ import com.github.leeyazhou.akshare4j.util.http.RequestContext;
  */
 public class TencentStockHistoryApi {
   private static final Logger logger = LoggerFactory.getLogger(TencentStockHistoryApi.class);
+  public static final String yyyyMMdd = "yyyy-MM-dd";
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      new DateTimeFormatterBuilder().appendPattern(yyyyMMdd).toFormatter();
 
   public static List<TencentKLineInfo> getKlines(String symbol, TencentMarketType marketType, TencentKlinePeriod ktype,
-      TencentAdjust fqtype, String startDate, String endDate, int limit) {
+      TencentAdjust fqtype, String toDate, String endTime, int limit) {
     List<TencentKLineInfo> allData = new ArrayList<>();
     int fetchCount = 3;
     limit = limit <= 0 ? 370 : limit;
     while (fetchCount-- > 0) {
-      List<TencentKLineInfo> batchData =
-          doFetchKlineDatas(symbol, marketType, ktype, fqtype, startDate, endDate, limit);
-      if (batchData == null) {
+      List<TencentKLineInfo> klines = doFetchKlineDatas(symbol, marketType, ktype, fqtype, toDate, endTime, limit);
+      if (klines == null) {
         break;
       }
-      allData.addAll(batchData);
+      allData.addAll(klines);
 
-      if (batchData.size() < limit) {
+      if (klines.size() < limit) {
         break;
       }
+      toDate = DateTime.parse(klines.get(0).getDate(), DATE_TIME_FORMATTER).plusDays(-1).toString(yyyyMMdd);
     }
-    return allData;
+    return allData.stream().sorted(Comparator.comparing(TencentKLineInfo::getDate)).distinct()
+        .collect(Collectors.toList());
   }
 
   public static List<TencentKLineInfo> fetchKlineBatch(String code, TencentMarketType marketType,
@@ -51,7 +60,7 @@ public class TencentStockHistoryApi {
   }
 
   private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType,
-      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endDate, int limit) {
+      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endTime, int limit) {
 
     StringBuilder url = new StringBuilder();
     url.append("https://proxy.finance.qq.com/cgi/cgi-bin/stockinfoquery/kline/app/get");
@@ -69,8 +78,8 @@ public class TencentStockHistoryApi {
     if (toDate != null) {
       url.append("&toDate=").append(toDate);
     }
-    if (endDate != null) {
-      url.append("&endTime=").append(endDate);
+    if (endTime != null) {
+      url.append("&endTime=").append(endTime);
     }
 
     RequestContext context = RequestContext.newContext(url.toString());

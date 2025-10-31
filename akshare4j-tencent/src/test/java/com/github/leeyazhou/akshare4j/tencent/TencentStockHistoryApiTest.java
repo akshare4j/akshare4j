@@ -22,7 +22,7 @@ class TencentStockHistoryApiTest {
   void testFetchCompleteKlineData() {
     String endDate = DateFormatUtils.format(new Date(), "yyyy-MM-dd");
     List<TencentKLineInfo> fetchCompleteKlineData = TencentStockHistoryApi.getKlines("603005", TencentMarketType.SH,
-        TencentKlinePeriod.Day, TencentAdjust.QFQ, null, null, 0);
+        TencentKlinePeriod.Day, TencentAdjust.QFQ, null, endDate, 0);
     System.out.println("size=" + fetchCompleteKlineData.size());
     for (TencentKLineInfo tencentKLineInfo : fetchCompleteKlineData) {
       System.out.println(JSON.toJSONString(tencentKLineInfo));
