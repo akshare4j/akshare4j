@@ -55,7 +55,7 @@ public class TencentStockApi {
         break;
       }
       allData.addAll(stockList);
-      logger.info("query stockListBatch, offset: {}, size: {}", offset, stockList.size());
+      logger.info("query stockListBatch, marketType: {}, offset: {}, size: {}", marketType, offset, stockList.size());
       if (stockList.size() < limit) {
         logger.info("stockList size: {}, offset: {}, limit: {}", stockList.size(), offset, limit);
         break;
