@@ -6,7 +6,7 @@ package com.github.leeyazhou.akshare4j.tencent.model;
 /**
  * @author leeyazhou
  */
-public class KLineRequest {
+public class HistoryRequestDTO {
 
   private String code;
   private String ktype;

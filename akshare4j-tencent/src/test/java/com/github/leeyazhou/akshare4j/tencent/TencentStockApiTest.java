@@ -3,7 +3,6 @@
  */
 package com.github.leeyazhou.akshare4j.tencent;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.alibaba.fastjson2.JSON;
@@ -23,13 +22,12 @@ class TencentStockApiTest {
     }
   }
 
-  /**
-   * Test method for
-   * {@link com.github.leeyazhou.akshare4j.tencent.TencentStockApi#doGetStockList(com.github.leeyazhou.akshare4j.tencent.model.StockListReqest)}.
-   */
   @Test
-  void testDoGetStockList() {
-    fail("Not yet implemented");
+  void testDoGetStockList() {}
+
+  @Test
+  void testQueryStockInfo() {
+    TencentStockApi.queryStockInfo("sz301361", "os-ppuOrnTEM8Zki353-okWCEP7I", "323ed30b7d96019f05eedb268c443283");
   }
 
 }

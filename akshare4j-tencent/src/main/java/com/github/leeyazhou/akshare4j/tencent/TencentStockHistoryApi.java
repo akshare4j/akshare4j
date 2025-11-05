@@ -15,8 +15,9 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.github.leeyazhou.akshare4j.tencent.model.ApiResult;
-import com.github.leeyazhou.akshare4j.tencent.model.KLineResponse;
+import com.github.leeyazhou.akshare4j.tencent.model.HistoryResponseDTO;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
+import com.github.leeyazhou.akshare4j.tencent.model.TencentStockQt;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
@@ -33,14 +34,22 @@ public class TencentStockHistoryApi {
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       new DateTimeFormatterBuilder().appendPattern(yyyyMMdd).toFormatter();
 
-  public static List<TencentKLineInfo> getKlines(String symbol, TencentMarketType marketType, TencentKlinePeriod ktype,
+  public static HistoryResponseDTO getKlines(String symbol, TencentMarketType marketType, TencentKlinePeriod ktype,
       TencentAdjust fqtype, String toDate, String endTime, int limit) {
     List<TencentKLineInfo> allData = new ArrayList<>();
+    TencentStockQt stockQt = null;
     int fetchCount = 3;
     limit = limit <= 0 ? 370 : limit;
     while (fetchCount-- > 0) {
-      List<TencentKLineInfo> klines = doFetchKlineDatas(symbol, marketType, ktype, fqtype, toDate, endTime, limit);
-      if (klines == null) {
+      HistoryResponseDTO historyResponseDTO = doFetchKlineDatas(symbol, marketType, ktype, fqtype, toDate, endTime, limit);
+      if (historyResponseDTO == null || historyResponseDTO.getNodes() == null) {
+        break;
+      }
+      if (stockQt == null) {
+        stockQt = historyResponseDTO.getQt();
+      }
+      List<TencentKLineInfo> klines = historyResponseDTO.getNodes();
+      if (klines == null || klines.size() == 0) {
         break;
       }
       allData.addAll(klines);
@@ -50,17 +59,21 @@ public class TencentStockHistoryApi {
       }
       toDate = DateTime.parse(klines.get(0).getDate(), DATE_TIME_FORMATTER).plusDays(-1).toString(yyyyMMdd);
     }
-    return allData.stream().sorted(Comparator.comparing(TencentKLineInfo::getDate)).distinct()
+    allData = allData.stream().sorted(Comparator.comparing(TencentKLineInfo::getDate)).distinct()
         .collect(Collectors.toList());
+    HistoryResponseDTO resp = new HistoryResponseDTO();
+    resp.setNodes(allData);
+    resp.setQt(stockQt);
+    return resp;
   }
 
-  public static List<TencentKLineInfo> fetchKlineBatch(String code, TencentMarketType marketType,
-      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endTime, int limit) throws Exception {
+  public static HistoryResponseDTO fetchKlineBatch(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
+      TencentAdjust fqtype, String toDate, String endTime, int limit) throws Exception {
     return doFetchKlineDatas(code, marketType, ktype, fqtype, toDate, endTime, limit);
   }
 
-  private static List<TencentKLineInfo> doFetchKlineDatas(String code, TencentMarketType marketType,
-      TencentKlinePeriod ktype, TencentAdjust fqtype, String toDate, String endTime, int limit) {
+  private static HistoryResponseDTO doFetchKlineDatas(String code, TencentMarketType marketType, TencentKlinePeriod ktype,
+      TencentAdjust fqtype, String toDate, String endTime, int limit) {
 
     StringBuilder url = new StringBuilder();
     url.append("https://proxy.finance.qq.com/cgi/cgi-bin/stockinfoquery/kline/app/get");
@@ -100,12 +113,12 @@ public class TencentStockHistoryApi {
     if (response.isOk() == false) {
       return null;
     }
-    ApiResult<KLineResponse> apiResponse =
-        JSON.parseObject(response.getResponse(), new TypeReference<ApiResult<KLineResponse>>() {});
+    ApiResult<HistoryResponseDTO> apiResponse =
+        JSON.parseObject(response.getResponse(), new TypeReference<ApiResult<HistoryResponseDTO>>() {});
     if (apiResponse.isSuccess() == false || apiResponse.getData() == null) {
-      return new ArrayList<>();
+      return null;
     }
-    return apiResponse.getData().getNodes();
+    return apiResponse.getData();
   }
 
 

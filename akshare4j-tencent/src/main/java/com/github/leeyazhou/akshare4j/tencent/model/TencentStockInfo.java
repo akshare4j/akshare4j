@@ -32,7 +32,7 @@ public class TencentStockInfo {
   private BigDecimal zd;
   
   /**
-   * 正跌幅百分比
+   * 涨跌幅百分比
    */
   private BigDecimal zdf;
 
