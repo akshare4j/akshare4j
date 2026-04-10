@@ -7,7 +7,7 @@
     <version>${revision}</version>
   </parent>
   <artifactId>akshare4j-eastmoney</artifactId>
-
+	<name>akshare4j eastmoney </name>
   <dependencies>
     <dependency>
       <groupId>com.github.leeyazhou</groupId>

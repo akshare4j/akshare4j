@@ -7,6 +7,7 @@
     <version>${revision}</version>
   </parent>
   <artifactId>akshare4j</artifactId>
+  <name>akshare4j</name>
   <dependencies>
     <dependency>
       <groupId>ch.qos.logback</groupId>
