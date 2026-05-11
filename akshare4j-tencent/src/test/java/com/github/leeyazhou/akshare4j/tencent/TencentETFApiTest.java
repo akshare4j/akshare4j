@@ -10,12 +10,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.List;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentETFInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
 import com.github.leeyazhou.akshare4j.util.http.HttpResponse;
 import com.github.leeyazhou.akshare4j.util.http.HttpService;
 import com.github.leeyazhou.akshare4j.util.http.HttpUtil;
@@ -48,8 +52,10 @@ class TencentETFApiTest {
   @DisplayName("未设置 openid 时应抛出异常")
   void testOpenid_Required() {
     TencentETFApi.setOpenid(null);
+    String endDate = DateFormatUtils.format(new DateTime().toDate(), "yyyyMMdd");
     assertThrows(IllegalArgumentException.class, () -> TencentETFApi.getETFAll());
-    assertThrows(IllegalArgumentException.class, () -> TencentETFApi.getKLine("sh563380", 1));
+    assertThrows(IllegalArgumentException.class,
+        () -> TencentETFApi.queryETFHistory("sh", "159982", endDate, 1, TencentKlinePeriod.Day, TencentAdjust.QFQ));
   }
 
   @Test
@@ -148,8 +154,9 @@ class TencentETFApiTest {
     res.setCode(200);
     res.setResponse(json);
     when(httpService.get(any())).thenReturn(res);
-
-    List<TencentKLineInfo> result = TencentETFApi.getKLine("sh563380", 1);
+    String endDate = DateFormatUtils.format(new DateTime().toDate(), "yyyyMMdd");
+    List<TencentKLineInfo> result =
+        TencentETFApi.queryETFHistory("sh", "159982", endDate, 1, TencentKlinePeriod.Day, TencentAdjust.QFQ);
 
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -160,8 +167,9 @@ class TencentETFApiTest {
   @DisplayName("K线查询失败场景处理")
   void testGetKLine_Fail() {
     when(httpService.get(any())).thenReturn(null);
-
-    List<TencentKLineInfo> result = TencentETFApi.getKLine("sh563380", 1);
+    String endDate = DateFormatUtils.format(new DateTime().toDate(), "yyyyMMdd");
+    List<TencentKLineInfo> result =
+        TencentETFApi.queryETFHistory("sh", "159982", endDate, 1, TencentKlinePeriod.Day, TencentAdjust.QFQ);
 
     assertTrue(result.isEmpty());
   }
@@ -199,5 +207,15 @@ class TencentETFApiTest {
         assertNotNull(etf.getName());
       }
     });
+  }
+
+  @Test
+  public void testGetKline() {
+    TencentETFApi.setHttpService(HttpUtil.getInstance());
+    TencentETFApi.setOpenid("os-ppuOrnTEM8Zki353-okWCEP7I");
+//    ProxyInfo proxyInfo = new ProxyInfo("192.168.31.244", 9091, "", "");
+//    TencentETFApi.setProxyInfo(proxyInfo);
+    String endDate = DateFormatUtils.format(new DateTime().toDate(), "yyyyMMdd");
+    TencentETFApi.queryETFHistory("sh", "159982", endDate, 500, TencentKlinePeriod.Day, TencentAdjust.QFQ);
   }
 }

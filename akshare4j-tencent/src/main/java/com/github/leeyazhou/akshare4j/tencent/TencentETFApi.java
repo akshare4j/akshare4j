@@ -19,6 +19,8 @@ import com.github.leeyazhou.akshare4j.tencent.model.HistoryResponseDTO;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentETFInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineInfo;
 import com.github.leeyazhou.akshare4j.tencent.model.TencentKLineRequestDTO;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentAdjust;
+import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentKlinePeriod;
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
 import com.github.leeyazhou.akshare4j.util.http.HttpResponse;
 import com.github.leeyazhou.akshare4j.util.http.HttpService;
@@ -37,7 +39,7 @@ public class TencentETFApi {
   private static final Logger logger = LoggerFactory.getLogger(TencentETFApi.class);
   private static final String RANK_URL = "https://proxy.finance.qq.com/cgi/cgi-bin/rank/fund/getList";
   private static final String KLINE_URL = "https://proxy.finance.qq.com/cgi/cgi-bin/stockinfoquery/kline/app/get";
-  
+
   public static final int LIMIT = 50;
   public static final int MAX_PAGES = 30;
   public static final long SLEEP_TIME = 3000L;
@@ -83,12 +85,13 @@ public class TencentETFApi {
    * @return K 线数据列表
    * @throws IllegalArgumentException 当 openid 未设置时抛出
    */
-  public static List<TencentKLineInfo> getKLine(String code, int limit) {
+  public static List<TencentKLineInfo> queryETFHistory(String market, String symbol, String endDate, int limit,
+      TencentKlinePeriod klinePeriod, TencentAdjust adjust) {
     checkOpenid();
     TencentKLineRequestDTO request = new TencentKLineRequestDTO();
-    request.setCode(code);
-    request.setKtype("day");
-    request.setFqtype("qfq");
+    request.setCode(market + symbol);
+    request.setKtype(klinePeriod.getCode());
+    request.setFqtype(adjust.getCode());
     request.setLimit(limit);
     request.setOpenid(openid);
     request.setApp("zxg_xcx");
@@ -108,13 +111,13 @@ public class TencentETFApi {
 
     addKLineHeaders(context);
 
-    logger.info("getKLine 请求参数: {}", context.getParams());
+    logger.info("queryETFHistory 请求参数: {}", context.getParams());
     HttpResponse response = httpService.get(context);
     if (response == null || !response.isOk()) {
       logger.error("查询 K 线接口失败，url: {}, response: {}", KLINE_URL, response);
       return new ArrayList<TencentKLineInfo>();
     }
-
+    logger.info("queryETFHistory 响应: {}", response.getResponse());
     ApiResult<HistoryResponseDTO> result = JSON.parseObject(response.getResponse(),
         new TypeReference<ApiResult<HistoryResponseDTO>>() {}, JSONReader.Feature.SupportSmartMatch);
 
