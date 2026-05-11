@@ -1,96 +1,102 @@
-/**
- * 
- */
 package com.github.leeyazhou.akshare4j.tencent.model;
 
 import com.github.leeyazhou.akshare4j.tencent.model.enums.TencentMarketType;
 
 /**
+ * 腾讯 ETF 信息领域模型（贫血模型）
+ * 
  * @author leeyazhou
  */
 public class TencentETFInfo {
 
-  /*
-   * "sz159945"
+  /**
+   * 股票代码，如 "sz159945"
    */
   private String code;
 
-  /*
-   * "0.00"
+  /**
+   * 份额折算比例
    */
   private String cwjsg;
 
-  /*
-   * "0.00"
+  /**
+   * 份额折算金额
    */
   private String cwjsgje;
 
-  /*
-   * "广发中证全指能源ETF"
+  /**
+   * 基金名称
    */
   private String fundName;
 
-  /*
-   * "30054198.00"
+  /**
+   * 规模
    */
   private String gm;
 
-  /*
-   * "能源ETF广发"
+  /**
+   * 简称
    */
   private String name;
 
-  /*
-   * ""
+  /**
+   * 状态
    */
   private String state;
 
-  /*
-   * "ETF"
+  /**
+   * 股票类型，如 "ETF"
    */
   private String stockType;
 
-  /*
-   * "21"
+  /**
+   * 换手率
    */
   private String turnover;
 
-  /*
-   * "1765.00"
+  /**
+   * 成交量
    */
   private String volume;
 
-  /*
-   * "-0.31"
+  /**
+   * 溢价率
    */
   private String yjl;
 
-  /*
-   * "-0.25"
+  /**
+   * 涨跌幅
    */
   private String zdf;
 
-  /*
-   * "10.53"
+  /**
+   * 20日涨跌幅
    */
   private String zdfD20;
 
-  /*
-   * "2.22"
+  /**
+   * 5日涨跌幅
    */
   private String zdfD5;
 
-  /*
-   * "3.28"
+  /**
+   * 累计涨跌幅
    */
   private String zdfY;
 
-  /*
-   * "1.197"
+  /**
+   * 最新价
    */
   private String zxj;
 
+  /**
+   * 市场类型（转换后）
+   */
   private TencentMarketType marketType;
+
+  /**
+   * 纯数字代码（转换后）
+   */
   private String symbol;
 
   public String getCode() {
@@ -236,6 +242,4 @@ public class TencentETFInfo {
   public void setSymbol(String symbol) {
     this.symbol = symbol;
   }
-
-
 }

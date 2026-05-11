@@ -1,26 +1,66 @@
-/**
- * 
- */
 package com.github.leeyazhou.akshare4j.tencent.model;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
 /**
+ * ETF 列表请求 DTO
+ * 
  * @author leeyazhou
  */
 public class ETFListRequestDTO {
 
+  /**
+   * 应用标识
+   */
+  private String app;
 
-  private String app;// mini_h5
+  /**
+   * 板块类型
+   */
   @JSONField(name = "board_type")
-  private String boardType;// etf_all
+  private String boardType;
+
+  /**
+   * 排序字段
+   */
   @JSONField(name = "sort_type")
-  private String sortType;// priceRatio
-  private String direct;// down
-  private int count;// 50
-  private int offset;// 276
-  private String comment;// 1
-  private String label;// 11,22,21,20,12,23
+  private String sortType;
+
+  /**
+   * 排序方向
+   */
+  private String direct;
+
+  /**
+   * 每页数量
+   */
+  private int count;
+
+  /**
+   * 偏移量
+   */
+  private int offset;
+
+  /**
+   * 评论标识
+   */
+  private String comment;
+
+  /**
+   * 标签过滤
+   */
+  private String label;
+
+  /**
+   * 基金类型
+   */
+  @JSONField(name = "fund_type")
+  private String fundType;
+
+  /**
+   * 用户标识
+   */
+  private String openid;
 
   public String getApp() {
     return app;
@@ -86,6 +126,19 @@ public class ETFListRequestDTO {
     this.label = label;
   }
 
+  public String getFundType() {
+    return fundType;
+  }
 
+  public void setFundType(String fundType) {
+    this.fundType = fundType;
+  }
 
+  public String getOpenid() {
+    return openid;
+  }
+
+  public void setOpenid(String openid) {
+    this.openid = openid;
+  }
 }

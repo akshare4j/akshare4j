@@ -4,11 +4,13 @@
 package com.github.leeyazhou.akshare4j.tencent.model;
 
 import java.util.List;
+import com.alibaba.fastjson2.annotation.JSONField;
 
 /**
  * @author leeyazhou
  */
 public class ETFListResponseDTO {
+  @JSONField(name = "rank_list")
   private List<TencentETFInfo> data;
 
   /**

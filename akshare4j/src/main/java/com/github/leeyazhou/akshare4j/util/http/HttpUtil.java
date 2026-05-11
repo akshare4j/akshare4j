@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipException;
 import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.CredentialsProvider;
@@ -19,9 +20,9 @@ import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.entity.BrotliDecompressingEntity;
-import org.apache.hc.client5.http.entity.GzipDecompressingEntity;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.entity.compress.ContentCodecRegistry;
+import org.apache.hc.client5.http.entity.compress.ContentCoding;
 import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
@@ -34,6 +35,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.BufferedHttpEntity;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -197,6 +199,7 @@ public class HttpUtil implements HttpService {
             String seperator = url.contains("?") ? "&" : "?";
             url += seperator + EntityUtils.toString(entity);
             httpRequest.setUri(URI.create(url));
+            logger.info("请求参数已添加到URL, url: {}", url);
           } else if (HttpMethod.POST.equals(method)) {
             ((HttpPost) httpRequest).setEntity(entity);
           }
@@ -317,18 +320,35 @@ public class HttpUtil implements HttpService {
         return httpResponse;
       }
       String reponseStr = null;
-      if (isGzip(response)) {
-        reponseStr = EntityUtils.toString(new GzipDecompressingEntity(response.getEntity()), context.getCharset());
-      } else if (isBr(response)) {
-        reponseStr = EntityUtils.toString(new BrotliDecompressingEntity(response.getEntity()), context.getCharset());
-      } else {
-        reponseStr = EntityUtils.toString(response.getEntity(), context.getCharset());
+      try {
+        HttpEntity entity = response.getEntity();
+        if (isGzip(response) || isBr(response)) {
+          entity = new BufferedHttpEntity(entity);
+          try {
+            if (isGzip(response)) {
+              reponseStr = EntityUtils.toString(ContentCodecRegistry.unwrap(ContentCoding.GZIP, entity));
+            } else {
+              reponseStr = EntityUtils.toString(ContentCodecRegistry.unwrap(ContentCoding.BROTLI, entity));
+            }
+          } catch (ZipException e) {
+            logger.warn("响应头声明了压缩但解析失败，降级为原始文本读取: {}", context.getUrl());
+            reponseStr = EntityUtils.toString(entity, context.getCharset());
+          }
+        } else {
+          reponseStr = EntityUtils.toString(entity, context.getCharset());
+        }
+      } catch (Exception e) {
+        logger.error("解析响应体发生异常: " + context.getUrl(), e);
       }
       httpResponse.setResponse(reponseStr);
       httpResponse.setCode(response.getCode());
       httpResponse.setHeaders(response.getHeaders());
     } catch (Exception e) {
       logger.error("请求异常url : " + context.getUrl(), e);
+      if (response != null) {
+        logger.error("响应状态：{}, url: {}, responeHeaders: {}", response.getCode(), context.getUrl(),
+            response.getHeaders());
+      }
       httpResponse.setMessage("fail:" + e.getMessage());
     } finally {
       if (response != null) {
@@ -349,12 +369,25 @@ public class HttpUtil implements HttpService {
         return httpResponse;
       }
       byte[] reponse = null;
-      if (isGzip(response)) {
-        reponse = EntityUtils.toByteArray(new GzipDecompressingEntity(response.getEntity()));
-      } else if (isBr(response)) {
-        reponse = EntityUtils.toByteArray(new BrotliDecompressingEntity(response.getEntity()));
-      } else {
-        reponse = EntityUtils.toByteArray(response.getEntity());
+      try {
+        HttpEntity entity = response.getEntity();
+        if (isGzip(response) || isBr(response)) {
+          entity = new BufferedHttpEntity(entity);
+          try {
+            if (isGzip(response)) {
+              reponse = EntityUtils.toByteArray(ContentCodecRegistry.unwrap(ContentCoding.GZIP, entity));
+            } else {
+              reponse = EntityUtils.toByteArray(ContentCodecRegistry.unwrap(ContentCoding.BROTLI, entity));
+            }
+          } catch (ZipException e) {
+            logger.warn("响应头声明了压缩但字节流解析失败，降级为原始数据读取: {}", context.getUrl());
+            reponse = EntityUtils.toByteArray(entity);
+          }
+        } else {
+          reponse = EntityUtils.toByteArray(entity);
+        }
+      } catch (Exception e) {
+        logger.error("解析响应体字节流发生异常: " + context.getUrl(), e);
       }
       httpResponse.setResponse(reponse);
       httpResponse.setCode(response.getCode());
